@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Progetti - DTT by Logix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        button.danger:hover {
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        button.success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        button.success:hover {
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .response {
+            margin-top: 20px;
+            padding: 20px;
+            background: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .auth-status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .auth-status.authenticated {
+            background: #d5f4e6;
+            color: #27ae60;
+            border: 2px solid #27ae60;
+        }
+
+        .auth-status.not-authenticated {
+            background: #fadbd8;
+            color: #e74c3c;
+            border: 2px solid #e74c3c;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .project-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .project-title {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .project-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-active { background: #d5f4e6; color: #27ae60; }
+        .status-completed { background: #d4edda; color: #155724; }
+        .status-draft { background: #fff3cd; color: #856404; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .status-on_hold { background: #e2e3e5; color: #383d41; }
+
+        .priority-urgent { color: #e74c3c; font-weight: bold; }
+        .priority-high { color: #f39c12; font-weight: bold; }
+        .priority-medium { color: #3498db; }
+        .priority-low { color: #95a5a6; }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            transition: width 0.3s;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Test API Progetti</h1>
+            <p>Interfaccia completa per testare tutti gli endpoint API dei progetti</p>
+        </div>
+
+        <div class="content">
+            <!-- Sezione Autenticazione -->
+            <div class="section">
+                <h2>🔐 Autenticazione</h2>
+                <div id="authStatus" class="auth-status not-authenticated">
+                    ❌ Non autenticato - Effettua il login per accedere alle API
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="loginEmail">Email:</label>
+                        <input type="email" id="loginEmail" value="admin@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password:</label>
+                        <input type="password" id="loginPassword" value="password">
+                    </div>
+                </div>
+                
+                <button onclick="login()">🔑 Login</button>
+                <button onclick="logout()" class="danger">🚪 Logout</button>
+                
+                <div id="authResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Sezione Lista Progetti -->
+            <div class="section">
+                <h2>📋 Lista Progetti</h2>
+                
+                <div class="filters">
+                    <div class="form-group">
+                        <label for="filterStatus">Status:</label>
+                        <select id="filterStatus">
+                            <option value="">Tutti</option>
+                            <option value="draft">Draft</option>
+                            <option value="active">Attivo</option>
+                            <option value="completed">Completato</option>
+                            <option value="cancelled">Cancellato</option>
+                            <option value="on_hold">In Pausa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filterPriority">Priorità:</label>
+                        <select id="filterPriority">
+                            <option value="">Tutte</option>
+                            <option value="low">Bassa</option>
+                            <option value="medium">Media</option>
+                            <option value="high">Alta</option>
+                            <option value="urgent">Urgente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filterClient">Cliente ID:</label>
+                        <input type="number" id="filterClient" placeholder="ID Cliente">
+                    </div>
+                    <div class="form-group">
+                        <label for="filterSearch">Ricerca:</label>
+                        <input type="text" id="filterSearch" placeholder="Nome o descrizione">
+                    </div>
+                    <div class="form-group">
+                        <label for="filterOverdue">Solo Scaduti:</label>
+                        <select id="filterOverdue">
+                            <option value="">No</option>
+                            <option value="true">Sì</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sortBy">Ordina per:</label>
+                        <select id="sortBy">
+                            <option value="created_at">Data Creazione</option>
+                            <option value="name">Nome</option>
+                            <option value="deadline">Deadline</option>
+                            <option value="budget">Budget</option>
+                            <option value="progress_percentage">Progresso</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="getProjects()">📋 Carica Progetti</button>
+                <button onclick="getProjectStats()" class="success">📊 Statistiche</button>
+                
+                <div id="projectsList"></div>
+                <div id="projectsResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Sezione Creazione Progetto -->
+            <div class="section">
+                <h2>➕ Crea Nuovo Progetto</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="createName">Nome Progetto:</label>
+                        <input type="text" id="createName" placeholder="Nome del progetto">
+                    </div>
+                    <div class="form-group">
+                        <label for="createClientId">Cliente ID:</label>
+                        <input type="number" id="createClientId" placeholder="ID del cliente">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="createDescription">Descrizione:</label>
+                    <textarea id="createDescription" placeholder="Descrizione del progetto"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="createUserId">Project Manager ID:</label>
+                        <input type="number" id="createUserId" placeholder="ID del project manager">
+                    </div>
+                    <div class="form-group">
+                        <label for="createStatus">Status:</label>
+                        <select id="createStatus">
+                            <option value="draft">Draft</option>
+                            <option value="active">Attivo</option>
+                            <option value="completed">Completato</option>
+                            <option value="cancelled">Cancellato</option>
+                            <option value="on_hold">In Pausa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="createPriority">Priorità:</label>
+                        <select id="createPriority">
+                            <option value="low">Bassa</option>
+                            <option value="medium">Media</option>
+                            <option value="high">Alta</option>
+                            <option value="urgent">Urgente</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="createStartDate">Data Inizio:</label>
+                        <input type="date" id="createStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="createEndDate">Data Fine:</label>
+                        <input type="date" id="createEndDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="createDeadline">Deadline:</label>
+                        <input type="date" id="createDeadline">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="createBudget">Budget (€):</label>
+                        <input type="number" id="createBudget" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="createEstimatedCost">Costo Stimato (€):</label>
+                        <input type="number" id="createEstimatedCost" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="createProgress">Progresso (%):</label>
+                        <input type="number" id="createProgress" min="0" max="100" placeholder="0">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="createNotes">Note:</label>
+                    <textarea id="createNotes" placeholder="Note aggiuntive"></textarea>
+                </div>
+                
+                <button onclick="createProject()" class="success">➕ Crea Progetto</button>
+                
+                <div id="createResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Sezione Visualizza/Modifica Progetto -->
+            <div class="section">
+                <h2>👁️ Visualizza e Modifica Progetto</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="projectId">ID Progetto:</label>
+                        <input type="number" id="projectId" placeholder="Inserisci ID progetto">
+                    </div>
+                </div>
+                
+                <button onclick="getProject()">👁️ Visualizza</button>
+                <button onclick="updateProject()" class="success">✏️ Aggiorna</button>
+                <button onclick="deleteProject()" class="danger">🗑️ Elimina</button>
+                <button onclick="updateProgress()" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%)">📈 Aggiorna Progresso</button>
+                
+                <div id="projectDetails"></div>
+                <div id="projectResponse" class="response" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let authToken = localStorage.getItem('authToken');
+        
+        // Aggiorna lo status di autenticazione all'avvio
+        updateAuthStatus();
+
+        function updateAuthStatus() {
+            const authStatus = document.getElementById('authStatus');
+            if (authToken) {
+                authStatus.className = 'auth-status authenticated';
+                authStatus.innerHTML = '✅ Autenticato - Token disponibile per le richieste API';
+            } else {
+                authStatus.className = 'auth-status not-authenticated';
+                authStatus.innerHTML = '❌ Non autenticato - Effettua il login per accedere alle API';
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = data.data.token;
+                    localStorage.setItem('authToken', authToken);
+                    updateAuthStatus();
+                }
+                
+                showResponse('authResponse', data);
+            } catch (error) {
+                showResponse('authResponse', { error: error.message });
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            localStorage.removeItem('authToken');
+            updateAuthStatus();
+            showResponse('authResponse', { message: 'Logout effettuato con successo' });
+        }
+
+        async function getProjects() {
+            if (!authToken) {
+                alert('Effettua prima il login!');
+                return;
+            }
+
+            const params = new URLSearchParams();
+            
+            // Aggiungi filtri se specificati
+            const status = document.getElementById('filterStatus').value;
+            const priority = document.getElementById('filterPriority').value;
+            const clientId = document.getElementById('filterClient').value;
+            const search = document.getElementById('filterSearch').value;
+            const overdue = document.getElementById('filterOverdue').value;
+            const sortBy = document.getElementById('sortBy').value;
+            
+            if (status) params.append('status', status);
+            if (priority) params.append('priority', priority);
+            if (clientId) params.append('client_id', clientId);
+            if (search) params.append('search', search);
+            if (overdue) params.append('overdue', overdue);
+            if (sortBy) params.append('sort_by', sortBy);
+            
+            try {
+                const response = await fetch(`/api/projects?${params}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.data.data) {
+                    displayProjects(data.data.data);
+                }
+                
+                showResponse('projectsResponse', data);
+            } catch (error) {
+                showResponse('projectsResponse', { error: error.message });
+            }
+        }
+
+        function displayProjects(projects) {
+            const container = document.getElementById('projectsList');
+            
+            if (!projects.length) {
+                container.innerHTML = '<p>Nessun progetto trovato.</p>';
+                return;
+            }
+            
+            container.innerHTML = projects.map(project => `
+                <div class="project-card">
+                    <div class="project-header">
+                        <span class="project-title">${project.name}</span>
+                        <span class="project-status status-${project.status}">${project.status.toUpperCase()}</span>
+                    </div>
+                    <p><strong>Cliente:</strong> ${project.client ? project.client.name : 'N/A'}</p>
+                    <p><strong>Project Manager:</strong> ${project.user ? project.user.name : 'N/A'}</p>
+                    <p><strong>Priorità:</strong> <span class="priority-${project.priority}">${project.priority}</span></p>
+                    <p><strong>Budget:</strong> €${project.budget || 0}</p>
+                    <p><strong>Progresso:</strong> ${project.progress_percentage || 0}%</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${project.progress_percentage || 0}%"></div>
+                    </div>
+                    <p><strong>Deadline:</strong> ${project.deadline || 'Non specificata'}</p>
+                    <p><strong>ID:</strong> ${project.id}</p>
+                </div>
+            `).join('');
+        }
+
+        async function getProjectStats() {
+            if (!authToken) {
+                alert('Effettua prima il login!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/projects/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayStats(data.data);
+                }
+                
+                showResponse('projectsResponse', data);
+            } catch (error) {
+                showResponse('projectsResponse', { error: error.message });
+            }
+        }
+
+        function displayStats(stats) {
+            const container = document.getElementById('projectsList');
+            
+            container.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.general.total_projects}</div>
+                        <div class="stat-label">Progetti Totali</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.general.active_projects}</div>
+                        <div class="stat-label">Progetti Attivi</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.general.completed_projects}</div>
+                        <div class="stat-label">Progetti Completati</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.general.overdue_projects}</div>
+                        <div class="stat-label">Progetti Scaduti</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">€${stats.general.total_budget || 0}</div>
+                        <div class="stat-label">Budget Totale</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${Math.round(stats.general.average_progress || 0)}%</div>
+                        <div class="stat-label">Progresso Medio</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function createProject() {
+            if (!authToken) {
+                alert('Effettua prima il login!');
+                return;
+            }
+
+            const projectData = {
+                name: document.getElementById('createName').value,
+                description: document.getElementById('createDescription').value,
+                client_id: parseInt(document.getElementById('createClientId').value),
+                user_id: parseInt(document.getElementById('createUserId').value),
+                status: document.getElementById('createStatus').value,
+                priority: document.getElementById('createPriority').value,
+                start_date: document.getElementById('createStartDate').value || null,
+                end_date: document.getElementById('createEndDate').value || null,
+                deadline: document.getElementById('createDeadline').value || null,
+                budget: parseFloat(document.getElementById('createBudget').value) || null,
+                estimated_cost: parseFloat(document.getElementById('createEstimatedCost').value) || null,
+                progress_percentage: parseInt(document.getElementById('createProgress').value) || 0,
+                notes: document.getElementById('createNotes').value || null
+            };
+
+            try {
+                const response = await fetch('/api/projects', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(projectData)
+                });
+                
+                const data = await response.json();
+                showResponse('createResponse', data);
+                
+                if (data.success) {
+                    // Reset form
+                    document.getElementById('createName').value = '';
+                    document.getElementById('createDescription').value = '';
+                    document.getElementById('createClientId').value = '';
+                    document.getElementById('createUserId').value = '';
+                    document.getElementById('createNotes').value = '';
+                }
+            } catch (error) {
+                showResponse('createResponse', { error: error.message });
+            }
+        }
+
+        async function getProject() {
+            if (!authToken) {
+                alert('Effettua prima il login!');
+                return;
+            }
+
+            const id = document.getElementById('projectId').value;
+            if (!id) {
+                alert('Inserisci un ID progetto!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/projects/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayProjectDetails(data.data);
+                }
+                
+                showResponse('projectResponse', data);
+            } catch (error) {
+                showResponse('projectResponse', { error: error.message });
+            }
+        }
+
+        function displayProjectDetails(project) {
+            const container = document.getElementById('projectDetails');
+            
+            container.innerHTML = `
+                <div class="project-card">
+                    <h3>${project.name}</h3>
+                    <p><strong>Descrizione:</strong> ${project.description || 'N/A'}</p>
+                    <p><strong>Cliente:</strong> ${project.client ? project.client.name : 'N/A'}</p>
+                    <p><strong>Project Manager:</strong> ${project.user ? project.user.name : 'N/A'}</p>
+                    <p><strong>Status:</strong> <span class="status-${project.status}">${project.status}</span></p>
+                    <p><strong>Priorità:</strong> <span class="priority-${project.priority}">${project.priority}</span></p>
+                    <p><strong>Budget:</strong> €${project.budget || 0}</p>
+                    <p><strong>Costo Effettivo:</strong> €${project.actual_cost || 0}</p>
+                    <p><strong>Progresso:</strong> ${project.progress_percentage || 0}%</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${project.progress_percentage || 0}%"></div>
+                    </div>
+                    <p><strong>Data Inizio:</strong> ${project.start_date || 'N/A'}</p>
+                    <p><strong>Data Fine:</strong> ${project.end_date || 'N/A'}</p>
+                    <p><strong>Deadline:</strong> ${project.deadline || 'N/A'}</p>
+                    <p><strong>Note:</strong> ${project.notes || 'N/A'}</p>
+                </div>
+            `;
+        }
+
+        async function updateProject() {
+            if (!authToken) {
+                alert('Effettua prima il login!');
+                return;
+            }
+
+            const id = document.getElementById('projectId').value;
+            if (!id) {
+                alert('Inserisci un ID progetto!');
+                return;
+            }
+
+            const updateData = {
+                name: prompt('Nuovo nome progetto:'),
+                status: prompt('Nuovo status (draft/active/completed/cancelled/on_hold):'),
+                progress_percentage: parseInt(prompt('Nuovo progresso (0-100):'))
+            };
+
+            // Rimuovi campi vuoti
+            Object.keys(updateData).forEach(key => {
+                if (!updateData[key] && updateData[key] !== 0) {
+                    delete updateData[key];
+                }
+            });
+
+            try {
+                const response = await fetch(`/api/projects/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                const data = await response.json();
+                showResponse('projectResponse', data);
+            } catch (error) {
+                showResponse('projectResponse', { error: error.message });
+            }
+        }
+
+        async function updateProgress() {
+            if (!authToken) {
+                alert('Effettua prima il login!');
+                return;
+            }
+
+            const id = document.getElementById('projectId').value;
+            if (!id) {
+                alert('Inserisci un ID progetto!');
+                return;
+            }
+
+            const progress = parseInt(prompt('Nuovo progresso (0-100):'));
+            const notes = prompt('Note aggiuntive (opzionale):');
+
+            if (isNaN(progress) || progress < 0 || progress > 100) {
+                alert('Il progresso deve essere un numero tra 0 e 100!');
+                return;
+            }
+
+            const updateData = {
+                progress_percentage: progress,
+                notes: notes || undefined
+            };
+
+            try {
+                const response = await fetch(`/api/projects/${id}/progress`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                const data = await response.json();
+                showResponse('projectResponse', data);
+            } catch (error) {
+                showResponse('projectResponse', { error: error.message });
+            }
+        }
+
+        async function deleteProject() {
+            if (!authToken) {
+                alert('Effettua prima il login!');
+                return;
+            }
+
+            const id = document.getElementById('projectId').value;
+            if (!id) {
+                alert('Inserisci un ID progetto!');
+                return;
+            }
+
+            if (!confirm('Sei sicuro di voler eliminare questo progetto?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/projects/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                showResponse('projectResponse', data);
+            } catch (error) {
+                showResponse('projectResponse', { error: error.message });
+            }
+        }
+
+        function showResponse(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>

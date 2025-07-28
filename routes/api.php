@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/{id}', [ClientController::class, 'update']);
         Route::delete('/{id}', [ClientController::class, 'destroy']);
     });
+
+    // Project routes
+    Route::get('/projects/stats', [ProjectController::class, 'stats']);
+    Route::put('/projects/{id}/progress', [ProjectController::class, 'updateProgress']);
+    Route::apiResource('projects', ProjectController::class);
 });
 
 // Route di fallback per API non trovate
