@@ -14,28 +14,61 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Crea un utente amministratore di test
-        User::create([
-            'name' => 'Admin DTT',
-            'email' => 'admin@dttbylogix.com',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-        ]);
+        // Crea o aggiorna un utente amministratore di test
+        User::updateOrCreate(
+            ['email' => 'admin@dttbylogix.com'],
+            [
+                'name' => 'Admin DTT',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'role' => 'admin',
+            ]
+        );
 
-        // Crea un utente normale di test
-        User::create([
-            'name' => 'Mario Rossi',
-            'email' => 'mario.rossi@example.com',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-        ]);
+        // Crea o aggiorna un utente normale di test
+        User::updateOrCreate(
+            ['email' => 'mario.rossi@example.com'],
+            [
+                'name' => 'Mario Rossi',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'role' => 'user',
+            ]
+        );
 
-        // Crea un altro utente di test
-        User::create([
-            'name' => 'Giulia Bianchi',
-            'email' => 'giulia.bianchi@example.com',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-        ]);
+        // Crea o aggiorna un altro utente di test
+        User::updateOrCreate(
+            ['email' => 'giulia.bianchi@example.com'],
+            [
+                'name' => 'Giulia Bianchi',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'role' => 'user',
+            ]
+        );
+
+        // Crea o aggiorna un secondo amministratore
+        User::updateOrCreate(
+            ['email' => 'superadmin@dttbylogix.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'role' => 'admin',
+            ]
+        );
+
+        // Crea o aggiorna utenti aggiuntivi per test
+        User::updateOrCreate(
+            ['email' => 'luca.verdi@example.com'],
+            [
+                'name' => 'Luca Verdi',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'role' => 'user',
+            ]
+        );
+
+        echo "UserSeeder completato: 5 utenti creati/aggiornati (2 admin, 3 user).\n";
     }
 }

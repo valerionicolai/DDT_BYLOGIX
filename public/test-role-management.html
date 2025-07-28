@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Role Management - DTT by Logix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .auth-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .btn-warning:hover {
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .response.success {
+            background: #d5f4e6;
+            border: 1px solid #27ae60;
+            color: #1e8449;
+        }
+
+        .response.error {
+            background: #fadbd8;
+            border: 1px solid #e74c3c;
+            color: #c0392b;
+        }
+
+        .user-info {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .user-info h3 {
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+        }
+
+        .stat-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .users-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-admin {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .role-user {
+            background: #3498db;
+            color: white;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Test Role Management</h1>
+            <p>Sistema di gestione ruoli e autorizzazioni - DTT by Logix</p>
+        </div>
+
+        <div class="content">
+            <!-- Sezione Autenticazione -->
+            <div class="section">
+                <h2>🔑 Autenticazione</h2>
+                <div class="auth-section">
+                    <div>
+                        <h3>Login</h3>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="loginEmail" value="admin@dttbylogix.com" placeholder="Email">
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" id="loginPassword" value="password123" placeholder="Password">
+                        </div>
+                        <button class="btn" onclick="login()">Login</button>
+                        <button class="btn btn-warning" onclick="switchToUser()">Switch to User</button>
+                        <button class="btn btn-danger" onclick="logout()">Logout</button>
+                    </div>
+                    <div>
+                        <h3>Utenti di Test</h3>
+                        <p><strong>Admin:</strong> admin@dttbylogix.com / password123</p>
+                        <p><strong>Super Admin:</strong> superadmin@dttbylogix.com / password123</p>
+                        <p><strong>User:</strong> mario.rossi@example.com / password123</p>
+                        <p><strong>User:</strong> giulia.bianchi@example.com / password123</p>
+                        <p><strong>User:</strong> luca.verdi@example.com / password123</p>
+                    </div>
+                </div>
+                <div id="authResponse" class="response hidden"></div>
+                <div id="userInfo" class="user-info hidden"></div>
+            </div>
+
+            <!-- Sezione Statistiche Utenti -->
+            <div class="section">
+                <h2>📊 Statistiche Utenti (Solo Admin)</h2>
+                <button class="btn" onclick="getUserStats()">Carica Statistiche</button>
+                <div id="statsContainer" class="stats-grid"></div>
+                <div id="statsResponse" class="response hidden"></div>
+            </div>
+
+            <!-- Sezione Gestione Utenti -->
+            <div class="section">
+                <h2>👥 Gestione Utenti (Solo Admin)</h2>
+                
+                <!-- Filtri -->
+                <div class="filters">
+                    <div class="form-group">
+                        <label>Filtra per ruolo:</label>
+                        <select id="roleFilter">
+                            <option value="">Tutti i ruoli</option>
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cerca:</label>
+                        <input type="text" id="searchFilter" placeholder="Nome o email">
+                    </div>
+                    <div class="form-group">
+                        <label>Stato verifica:</label>
+                        <select id="verifiedFilter">
+                            <option value="">Tutti</option>
+                            <option value="true">Verificati</option>
+                            <option value="false">Non verificati</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="loadUsers()">Carica Utenti</button>
+                <button class="btn btn-success" onclick="showCreateUserForm()">Crea Nuovo Utente</button>
+                
+                <div id="usersContainer"></div>
+                <div id="usersResponse" class="response hidden"></div>
+            </div>
+
+            <!-- Sezione Creazione Utente -->
+            <div class="section hidden" id="createUserSection">
+                <h2>➕ Crea Nuovo Utente (Solo Admin)</h2>
+                <div class="form-group">
+                    <label>Nome:</label>
+                    <input type="text" id="newUserName" placeholder="Nome completo">
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="newUserEmail" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="newUserPassword" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <label>Conferma Password:</label>
+                    <input type="password" id="newUserPasswordConfirmation" placeholder="Conferma password">
+                </div>
+                <div class="form-group">
+                    <label>Ruolo:</label>
+                    <select id="newUserRole">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button class="btn btn-success" onclick="createUser()">Crea Utente</button>
+                <button class="btn" onclick="hideCreateUserForm()">Annulla</button>
+                <div id="createUserResponse" class="response hidden"></div>
+            </div>
+
+            <!-- Sezione Test Autorizzazioni -->
+            <div class="section">
+                <h2>🛡️ Test Autorizzazioni</h2>
+                <p>Testa l'accesso a endpoint protetti con diversi ruoli:</p>
+                
+                <h3>Endpoint accessibili a tutti gli utenti autenticati:</h3>
+                <button class="btn" onclick="testEndpoint('/api/users/profile', 'GET')">GET /api/users/profile</button>
+                <button class="btn" onclick="testEndpoint('/api/clients', 'GET')">GET /api/clients</button>
+                <button class="btn" onclick="testEndpoint('/api/projects', 'GET')">GET /api/projects</button>
+                <button class="btn" onclick="testEndpoint('/api/material-types', 'GET')">GET /api/material-types</button>
+                
+                <h3>Endpoint solo Admin:</h3>
+                <button class="btn btn-warning" onclick="testEndpoint('/api/users/stats', 'GET')">GET /api/users/stats</button>
+                <button class="btn btn-warning" onclick="testEndpoint('/api/users', 'GET')">GET /api/users</button>
+                <button class="btn btn-warning" onclick="testEndpoint('/api/clients/stats', 'GET')">GET /api/clients/stats</button>
+                <button class="btn btn-warning" onclick="testEndpoint('/api/projects/stats', 'GET')">GET /api/projects/stats</button>
+                <button class="btn btn-warning" onclick="testEndpoint('/api/material-types/stats', 'GET')">GET /api/material-types/stats</button>
+                
+                <div id="authTestResponse" class="response hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+        let authToken = localStorage.getItem('auth_token');
+        let currentUser = null;
+
+        // Aggiorna l'interfaccia in base allo stato di autenticazione
+        function updateAuthUI() {
+            const userInfoDiv = document.getElementById('userInfo');
+            if (authToken && currentUser) {
+                userInfoDiv.innerHTML = `
+                    <h3>Utente Autenticato</h3>
+                    <p><strong>Nome:</strong> ${currentUser.name}</p>
+                    <p><strong>Email:</strong> ${currentUser.email}</p>
+                    <p><strong>Ruolo:</strong> <span class="role-badge role-${currentUser.role}">${currentUser.role}</span></p>
+                    <p><strong>Verificato:</strong> ${currentUser.email_verified_at ? 'Sì' : 'No'}</p>
+                `;
+                userInfoDiv.classList.remove('hidden');
+            } else {
+                userInfoDiv.classList.add('hidden');
+            }
+        }
+
+        // Login
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                const responseDiv = document.getElementById('authResponse');
+                
+                if (data.success) {
+                    authToken = data.data.token;
+                    currentUser = data.data.user;
+                    localStorage.setItem('auth_token', authToken);
+                    
+                    responseDiv.className = 'response success';
+                    responseDiv.textContent = `Login effettuato con successo!\nToken: ${authToken.substring(0, 20)}...\nRuolo: ${currentUser.role}`;
+                    updateAuthUI();
+                } else {
+                    responseDiv.className = 'response error';
+                    responseDiv.textContent = `Errore: ${data.message}`;
+                }
+                responseDiv.classList.remove('hidden');
+            } catch (error) {
+                const responseDiv = document.getElementById('authResponse');
+                responseDiv.className = 'response error';
+                responseDiv.textContent = `Errore di rete: ${error.message}`;
+                responseDiv.classList.remove('hidden');
+            }
+        }
+
+        // Switch to user account
+        function switchToUser() {
+            document.getElementById('loginEmail').value = 'mario.rossi@example.com';
+            document.getElementById('loginPassword').value = 'password123';
+        }
+
+        // Logout
+        async function logout() {
+            if (!authToken) {
+                alert('Non sei autenticato');
+                return;
+            }
+
+            try {
+                await fetch(`${API_BASE}/auth/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+            } catch (error) {
+                console.log('Errore durante logout:', error);
+            }
+
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('auth_token');
+            
+            const responseDiv = document.getElementById('authResponse');
+            responseDiv.className = 'response success';
+            responseDiv.textContent = 'Logout effettuato con successo!';
+            responseDiv.classList.remove('hidden');
+            updateAuthUI();
+        }
+
+        // Get user statistics
+        async function getUserStats() {
+            if (!authToken) {
+                alert('Devi essere autenticato');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/users/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                const responseDiv = document.getElementById('statsResponse');
+                const statsContainer = document.getElementById('statsContainer');
+                
+                if (data.success) {
+                    const stats = data.data;
+                    statsContainer.innerHTML = `
+                        <div class="stat-card">
+                            <h4>Totale Utenti</h4>
+                            <div class="number">${stats.total_users}</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Amministratori</h4>
+                            <div class="number">${stats.admin_users}</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Utenti Normali</h4>
+                            <div class="number">${stats.regular_users}</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Utenti Verificati</h4>
+                            <div class="number">${stats.verified_users}</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Utenti Non Verificati</h4>
+                            <div class="number">${stats.unverified_users}</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Utenti Recenti (30gg)</h4>
+                            <div class="number">${stats.recent_users}</div>
+                        </div>
+                    `;
+                    
+                    responseDiv.className = 'response success';
+                    responseDiv.textContent = 'Statistiche caricate con successo!';
+                } else {
+                    responseDiv.className = 'response error';
+                    responseDiv.textContent = `Errore: ${data.message}`;
+                }
+                responseDiv.classList.remove('hidden');
+            } catch (error) {
+                const responseDiv = document.getElementById('statsResponse');
+                responseDiv.className = 'response error';
+                responseDiv.textContent = `Errore di rete: ${error.message}`;
+                responseDiv.classList.remove('hidden');
+            }
+        }
+
+        // Load users
+        async function loadUsers() {
+            if (!authToken) {
+                alert('Devi essere autenticato');
+                return;
+            }
+
+            const roleFilter = document.getElementById('roleFilter').value;
+            const searchFilter = document.getElementById('searchFilter').value;
+            const verifiedFilter = document.getElementById('verifiedFilter').value;
+
+            let url = `${API_BASE}/users?`;
+            if (roleFilter) url += `role=${roleFilter}&`;
+            if (searchFilter) url += `search=${searchFilter}&`;
+            if (verifiedFilter) url += `verified=${verifiedFilter}&`;
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                const responseDiv = document.getElementById('usersResponse');
+                const usersContainer = document.getElementById('usersContainer');
+                
+                if (data.success) {
+                    let tableHTML = `
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Ruolo</th>
+                                    <th>Verificato</th>
+                                    <th>Creato</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    data.data.forEach(user => {
+                        tableHTML += `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.name}</td>
+                                <td>${user.email}</td>
+                                <td><span class="role-badge role-${user.role}">${user.role}</span></td>
+                                <td>${user.email_verified_at ? 'Sì' : 'No'}</td>
+                                <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="changeUserRole(${user.id}, '${user.role === 'admin' ? 'user' : 'admin'}')">
+                                        ${user.role === 'admin' ? 'Rendi User' : 'Rendi Admin'}
+                                    </button>
+                                    ${user.id !== currentUser?.id ? `<button class="btn btn-danger" onclick="deleteUser(${user.id})">Elimina</button>` : ''}
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    tableHTML += '</tbody></table>';
+                    usersContainer.innerHTML = tableHTML;
+                    
+                    responseDiv.className = 'response success';
+                    responseDiv.textContent = `${data.data.length} utenti caricati con successo!`;
+                } else {
+                    responseDiv.className = 'response error';
+                    responseDiv.textContent = `Errore: ${data.message}`;
+                }
+                responseDiv.classList.remove('hidden');
+            } catch (error) {
+                const responseDiv = document.getElementById('usersResponse');
+                responseDiv.className = 'response error';
+                responseDiv.textContent = `Errore di rete: ${error.message}`;
+                responseDiv.classList.remove('hidden');
+            }
+        }
+
+        // Show create user form
+        function showCreateUserForm() {
+            document.getElementById('createUserSection').classList.remove('hidden');
+        }
+
+        // Hide create user form
+        function hideCreateUserForm() {
+            document.getElementById('createUserSection').classList.add('hidden');
+            // Clear form
+            document.getElementById('newUserName').value = '';
+            document.getElementById('newUserEmail').value = '';
+            document.getElementById('newUserPassword').value = '';
+            document.getElementById('newUserPasswordConfirmation').value = '';
+            document.getElementById('newUserRole').value = 'user';
+        }
+
+        // Create user
+        async function createUser() {
+            if (!authToken) {
+                alert('Devi essere autenticato');
+                return;
+            }
+
+            const userData = {
+                name: document.getElementById('newUserName').value,
+                email: document.getElementById('newUserEmail').value,
+                password: document.getElementById('newUserPassword').value,
+                password_confirmation: document.getElementById('newUserPasswordConfirmation').value,
+                role: document.getElementById('newUserRole').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+                const responseDiv = document.getElementById('createUserResponse');
+                
+                if (data.success) {
+                    responseDiv.className = 'response success';
+                    responseDiv.textContent = `Utente creato con successo!\nID: ${data.data.id}\nNome: ${data.data.name}\nEmail: ${data.data.email}\nRuolo: ${data.data.role}`;
+                    hideCreateUserForm();
+                    loadUsers(); // Ricarica la lista utenti
+                } else {
+                    responseDiv.className = 'response error';
+                    responseDiv.textContent = `Errore: ${data.message}\n${JSON.stringify(data.errors || {}, null, 2)}`;
+                }
+                responseDiv.classList.remove('hidden');
+            } catch (error) {
+                const responseDiv = document.getElementById('createUserResponse');
+                responseDiv.className = 'response error';
+                responseDiv.textContent = `Errore di rete: ${error.message}`;
+                responseDiv.classList.remove('hidden');
+            }
+        }
+
+        // Change user role
+        async function changeUserRole(userId, newRole) {
+            if (!authToken) {
+                alert('Devi essere autenticato');
+                return;
+            }
+
+            if (!confirm(`Sei sicuro di voler cambiare il ruolo dell'utente a ${newRole}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/users/${userId}/role`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ role: newRole })
+                });
+
+                const data = await response.json();
+                const responseDiv = document.getElementById('usersResponse');
+                
+                if (data.success) {
+                    responseDiv.className = 'response success';
+                    responseDiv.textContent = `Ruolo utente aggiornato con successo a: ${newRole}`;
+                    loadUsers(); // Ricarica la lista utenti
+                } else {
+                    responseDiv.className = 'response error';
+                    responseDiv.textContent = `Errore: ${data.message}`;
+                }
+                responseDiv.classList.remove('hidden');
+            } catch (error) {
+                const responseDiv = document.getElementById('usersResponse');
+                responseDiv.className = 'response error';
+                responseDiv.textContent = `Errore di rete: ${error.message}`;
+                responseDiv.classList.remove('hidden');
+            }
+        }
+
+        // Delete user
+        async function deleteUser(userId) {
+            if (!authToken) {
+                alert('Devi essere autenticato');
+                return;
+            }
+
+            if (!confirm('Sei sicuro di voler eliminare questo utente?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                const responseDiv = document.getElementById('usersResponse');
+                
+                if (data.success) {
+                    responseDiv.className = 'response success';
+                    responseDiv.textContent = 'Utente eliminato con successo!';
+                    loadUsers(); // Ricarica la lista utenti
+                } else {
+                    responseDiv.className = 'response error';
+                    responseDiv.textContent = `Errore: ${data.message}`;
+                }
+                responseDiv.classList.remove('hidden');
+            } catch (error) {
+                const responseDiv = document.getElementById('usersResponse');
+                responseDiv.className = 'response error';
+                responseDiv.textContent = `Errore di rete: ${error.message}`;
+                responseDiv.classList.remove('hidden');
+            }
+        }
+
+        // Test endpoint authorization
+        async function testEndpoint(endpoint, method = 'GET') {
+            if (!authToken) {
+                alert('Devi essere autenticato');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                const responseDiv = document.getElementById('authTestResponse');
+                
+                if (response.ok) {
+                    responseDiv.className = 'response success';
+                    responseDiv.textContent = `✅ ${method} ${endpoint}\nStatus: ${response.status}\nAccesso consentito!\n\nRisposta:\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    responseDiv.className = 'response error';
+                    responseDiv.textContent = `❌ ${method} ${endpoint}\nStatus: ${response.status}\nAccesso negato!\n\nRisposta:\n${JSON.stringify(data, null, 2)}`;
+                }
+                responseDiv.classList.remove('hidden');
+            } catch (error) {
+                const responseDiv = document.getElementById('authTestResponse');
+                responseDiv.className = 'response error';
+                responseDiv.textContent = `Errore di rete: ${error.message}`;
+                responseDiv.classList.remove('hidden');
+            }
+        }
+
+        // Initialize
+        if (authToken) {
+            // Try to get current user info
+            fetch(`${API_BASE}/users/profile`, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentUser = data.data;
+                    updateAuthUI();
+                } else {
+                    // Token non valido
+                    authToken = null;
+                    localStorage.removeItem('auth_token');
+                }
+            })
+            .catch(() => {
+                // Token non valido
+                authToken = null;
+                localStorage.removeItem('auth_token');
+            });
+        }
+    </script>
+</body>
+</html>

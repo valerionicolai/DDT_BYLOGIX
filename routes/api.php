@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\MaterialTypeController;
 use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -38,29 +39,71 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    // Route per la gestione dei clients
+    // Route per la gestione dei clients (admin only for create/update/delete)
     Route::prefix('clients')->group(function () {
-        Route::get('/stats', [ClientController::class, 'stats']);
+        Route::get('/stats', [ClientController::class, 'stats'])->middleware('admin');
         Route::get('/', [ClientController::class, 'index']);
-        Route::post('/', [ClientController::class, 'store']);
         Route::get('/{id}', [ClientController::class, 'show']);
-        Route::put('/{id}', [ClientController::class, 'update']);
-        Route::patch('/{id}', [ClientController::class, 'update']);
-        Route::delete('/{id}', [ClientController::class, 'destroy']);
+        
+        // Admin-only operations
+        Route::middleware('admin')->group(function () {
+            Route::post('/', [ClientController::class, 'store']);
+            Route::put('/{id}', [ClientController::class, 'update']);
+            Route::patch('/{id}', [ClientController::class, 'update']);
+            Route::delete('/{id}', [ClientController::class, 'destroy']);
+        });
     });
 
-    // Project routes
-    Route::get('/projects/stats', [ProjectController::class, 'stats']);
-    Route::put('/projects/{id}/progress', [ProjectController::class, 'updateProgress']);
-    Route::apiResource('projects', ProjectController::class);
+    // Project routes (admin only for create/update/delete)
+    Route::prefix('projects')->group(function () {
+        Route::get('/stats', [ProjectController::class, 'stats'])->middleware('admin');
+        Route::get('/', [ProjectController::class, 'index']);
+        Route::get('/{id}', [ProjectController::class, 'show']);
+        
+        // Admin-only operations
+        Route::middleware('admin')->group(function () {
+            Route::post('/', [ProjectController::class, 'store']);
+            Route::put('/{id}', [ProjectController::class, 'update']);
+            Route::patch('/{id}', [ProjectController::class, 'update']);
+            Route::delete('/{id}', [ProjectController::class, 'destroy']);
+            Route::put('/{id}/progress', [ProjectController::class, 'updateProgress']);
+        });
+    });
 
-    // Material Types routes
+    // Material Types routes (admin only for create/update/delete)
     Route::prefix('material-types')->group(function () {
-        Route::get('/stats', [MaterialTypeController::class, 'stats']);
+        Route::get('/stats', [MaterialTypeController::class, 'stats'])->middleware('admin');
         Route::get('/categories', [MaterialTypeController::class, 'categories']);
         Route::get('/units-of-measure', [MaterialTypeController::class, 'unitsOfMeasure']);
+        Route::get('/', [MaterialTypeController::class, 'index']);
+        Route::get('/{id}', [MaterialTypeController::class, 'show']);
+        
+        // Admin-only operations
+        Route::middleware('admin')->group(function () {
+            Route::post('/', [MaterialTypeController::class, 'store']);
+            Route::put('/{id}', [MaterialTypeController::class, 'update']);
+            Route::patch('/{id}', [MaterialTypeController::class, 'update']);
+            Route::delete('/{id}', [MaterialTypeController::class, 'destroy']);
+        });
     });
-    Route::apiResource('material-types', MaterialTypeController::class);
+
+    // User management routes (admin only for most operations)
+    Route::prefix('users')->group(function () {
+        // Profile route accessible to all authenticated users
+        Route::get('/profile', [UserController::class, 'profile']);
+        
+        // Admin-only routes
+        Route::middleware('admin')->group(function () {
+            Route::get('/stats', [UserController::class, 'stats']);
+            Route::get('/', [UserController::class, 'index']);
+            Route::post('/', [UserController::class, 'store']);
+            Route::get('/{id}', [UserController::class, 'show']);
+            Route::put('/{id}', [UserController::class, 'update']);
+            Route::patch('/{id}', [UserController::class, 'update']);
+            Route::delete('/{id}', [UserController::class, 'destroy']);
+            Route::patch('/{id}/role', [UserController::class, 'updateRole']);
+        });
+    });
 });
 
 // Route di fallback per API non trovate
