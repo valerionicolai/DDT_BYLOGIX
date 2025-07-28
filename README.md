@@ -46,6 +46,35 @@ Il progetto è organizzato secondo la metodologia Agile in Sprint:
 - **Sprint 3**: Barcode, Scansione e Funzionalità Avanzate
 - **Sprint 4**: Refactoring, Test e Deploy
 
+## Git e Strategia di Branching
+
+Il progetto utilizza **GitFlow** come strategia di branching. Per dettagli completi, consultare [GITFLOW.md](GITFLOW.md).
+
+### Branch Principali
+- `main`: Codice di produzione stabile
+- `develop`: Branch di integrazione per lo sviluppo
+
+### Workflow Rapido
+```bash
+# Creare feature branch
+git checkout develop
+git checkout -b feature/s[sprint]-[task-id]-[description]
+
+# Sviluppo e commit
+git add .
+git commit -m "feat(scope): description"
+
+# Push e Pull Request
+git push origin feature/s[sprint]-[task-id]-[description]
+```
+
+### Convenzioni Commit
+- `feat`: Nuova funzionalità
+- `fix`: Correzione bug
+- `docs`: Documentazione
+- `test`: Test
+- `refactor`: Refactoring
+
 ## Tecnologie Utilizzate
 
 - **Backend**: Laravel 12
