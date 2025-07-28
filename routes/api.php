@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\MaterialTypeController;
 use App\Http\Controllers\Api\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/projects/stats', [ProjectController::class, 'stats']);
     Route::put('/projects/{id}/progress', [ProjectController::class, 'updateProgress']);
     Route::apiResource('projects', ProjectController::class);
+
+    // Material Types routes
+    Route::prefix('material-types')->group(function () {
+        Route::get('/stats', [MaterialTypeController::class, 'stats']);
+        Route::get('/categories', [MaterialTypeController::class, 'categories']);
+        Route::get('/units-of-measure', [MaterialTypeController::class, 'unitsOfMeasure']);
+    });
+    Route::apiResource('material-types', MaterialTypeController::class);
 });
 
 // Route di fallback per API non trovate
