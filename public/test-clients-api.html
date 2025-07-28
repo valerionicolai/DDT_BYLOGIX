@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Clients - DTT by Logix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test API Clients - DTT by Logix</h1>
+        <div id="connectionStatus" class="status disconnected">❌ Non autenticato</div>
+    </div>
+
+    <!-- Sezione Login -->
+    <div class="container">
+        <h2>🔐 Autenticazione</h2>
+        <div class="grid">
+            <div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="loginEmail" value="admin@dttbylogix.com">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="loginPassword" value="password">
+                </div>
+                <button onclick="login()">🔑 Login</button>
+                <button onclick="logout()">🚪 Logout</button>
+            </div>
+            <div>
+                <div class="result" id="authResult">Risultato autenticazione...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sezione Clients -->
+    <div class="container">
+        <h2>👥 Gestione Clients</h2>
+        
+        <!-- Lista Clients -->
+        <div style="margin-bottom: 20px;">
+            <h3>📋 Lista Clients</h3>
+            <div class="grid">
+                <div>
+                    <div class="form-group">
+                        <label>Ricerca:</label>
+                        <input type="text" id="searchTerm" placeholder="Nome, email, azienda...">
+                    </div>
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select id="statusFilter">
+                            <option value="">Tutti</option>
+                            <option value="active">Attivi</option>
+                            <option value="inactive">Inattivi</option>
+                        </select>
+                    </div>
+                    <button onclick="getClients()">📋 Carica Clients</button>
+                    <button onclick="getStats()">📊 Statistiche</button>
+                </div>
+                <div>
+                    <div class="result" id="clientsResult">Lista clients...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crea/Modifica Client -->
+        <div style="margin-bottom: 20px;">
+            <h3>➕ Crea/Modifica Client</h3>
+            <div class="grid">
+                <div>
+                    <div class="form-group">
+                        <label>Nome:</label>
+                        <input type="text" id="clientName" placeholder="Nome del cliente">
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="clientEmail" placeholder="email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefono:</label>
+                        <input type="text" id="clientPhone" placeholder="+39 123 456789">
+                    </div>
+                    <div class="form-group">
+                        <label>Azienda:</label>
+                        <input type="text" id="clientCompany" placeholder="Nome azienda">
+                    </div>
+                    <div class="form-group">
+                        <label>Indirizzo:</label>
+                        <input type="text" id="clientAddress" placeholder="Via, numero civico">
+                    </div>
+                    <div class="form-group">
+                        <label>Città:</label>
+                        <input type="text" id="clientCity" placeholder="Città">
+                    </div>
+                    <div class="form-group">
+                        <label>CAP:</label>
+                        <input type="text" id="clientPostalCode" placeholder="12345">
+                    </div>
+                    <div class="form-group">
+                        <label>Paese:</label>
+                        <input type="text" id="clientCountry" placeholder="Italia">
+                    </div>
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select id="clientStatus">
+                            <option value="active">Attivo</option>
+                            <option value="inactive">Inattivo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Note:</label>
+                        <textarea id="clientNotes" rows="3" placeholder="Note aggiuntive..."></textarea>
+                    </div>
+                    <button onclick="createClient()">➕ Crea Client</button>
+                    <button onclick="updateClient()">✏️ Aggiorna Client</button>
+                    <button onclick="clearForm()">🗑️ Pulisci Form</button>
+                </div>
+                <div>
+                    <div class="result" id="clientFormResult">Risultato operazione...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operazioni su Client Specifico -->
+        <div>
+            <h3>🔍 Operazioni su Client Specifico</h3>
+            <div class="grid">
+                <div>
+                    <div class="form-group">
+                        <label>ID Client:</label>
+                        <input type="number" id="clientId" placeholder="1">
+                    </div>
+                    <button onclick="getClient()">👁️ Visualizza Client</button>
+                    <button onclick="deleteClient()">🗑️ Elimina Client</button>
+                </div>
+                <div>
+                    <div class="result" id="clientOperationResult">Risultato operazione...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let authToken = null;
+        const baseUrl = 'http://127.0.0.1:8000/api';
+
+        // Funzione per fare richieste HTTP
+        async function makeRequest(url, method = 'GET', data = null) {
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
+
+            if (authToken) {
+                headers['Authorization'] = `Bearer ${authToken}`;
+            }
+
+            const config = {
+                method: method,
+                headers: headers
+            };
+
+            if (data) {
+                config.body = JSON.stringify(data);
+            }
+
+            try {
+                const response = await fetch(url, config);
+                const result = await response.json();
+                return {
+                    status: response.status,
+                    data: result
+                };
+            } catch (error) {
+                return {
+                    status: 0,
+                    data: { error: error.message }
+                };
+            }
+        }
+
+        // Aggiorna lo status di connessione
+        function updateConnectionStatus() {
+            const statusEl = document.getElementById('connectionStatus');
+            if (authToken) {
+                statusEl.className = 'status connected';
+                statusEl.textContent = '✅ Autenticato';
+            } else {
+                statusEl.className = 'status disconnected';
+                statusEl.textContent = '❌ Non autenticato';
+            }
+        }
+
+        // Login
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const result = await makeRequest(`${baseUrl}/auth/login`, 'POST', {
+                email: email,
+                password: password
+            });
+
+            const resultEl = document.getElementById('authResult');
+            if (result.status === 200 && result.data.data && result.data.data.token) {
+                authToken = result.data.data.token;
+                resultEl.innerHTML = `<span class="success">✅ Login riuscito!</span>\n${JSON.stringify(result.data, null, 2)}`;
+                updateConnectionStatus();
+            } else {
+                resultEl.innerHTML = `<span class="error">❌ Login fallito!</span>\n${JSON.stringify(result, null, 2)}`;
+            }
+        }
+
+        // Logout
+        async function logout() {
+            if (authToken) {
+                await makeRequest(`${baseUrl}/auth/logout`, 'POST');
+            }
+            authToken = null;
+            updateConnectionStatus();
+            document.getElementById('authResult').innerHTML = '🚪 Logout effettuato';
+        }
+
+        // Carica lista clients
+        async function getClients() {
+            const search = document.getElementById('searchTerm').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            let url = `${baseUrl}/clients?`;
+            if (search) url += `search=${encodeURIComponent(search)}&`;
+            if (status) url += `status=${status}&`;
+            
+            const result = await makeRequest(url);
+            const resultEl = document.getElementById('clientsResult');
+            
+            if (result.status === 200) {
+                resultEl.innerHTML = `<span class="success">✅ Clients caricati!</span>\n${JSON.stringify(result.data, null, 2)}`;
+            } else {
+                resultEl.innerHTML = `<span class="error">❌ Errore nel caricamento!</span>\n${JSON.stringify(result, null, 2)}`;
+            }
+        }
+
+        // Carica statistiche
+        async function getStats() {
+            const result = await makeRequest(`${baseUrl}/clients/stats`);
+            const resultEl = document.getElementById('clientsResult');
+            
+            if (result.status === 200) {
+                resultEl.innerHTML = `<span class="success">✅ Statistiche caricate!</span>\n${JSON.stringify(result.data, null, 2)}`;
+            } else {
+                resultEl.innerHTML = `<span class="error">❌ Errore nel caricamento statistiche!</span>\n${JSON.stringify(result, null, 2)}`;
+            }
+        }
+
+        // Crea client
+        async function createClient() {
+            const clientData = {
+                name: document.getElementById('clientName').value,
+                email: document.getElementById('clientEmail').value,
+                phone: document.getElementById('clientPhone').value,
+                company: document.getElementById('clientCompany').value,
+                address: document.getElementById('clientAddress').value,
+                city: document.getElementById('clientCity').value,
+                postal_code: document.getElementById('clientPostalCode').value,
+                country: document.getElementById('clientCountry').value,
+                status: document.getElementById('clientStatus').value,
+                notes: document.getElementById('clientNotes').value
+            };
+
+            const result = await makeRequest(`${baseUrl}/clients`, 'POST', clientData);
+            const resultEl = document.getElementById('clientFormResult');
+            
+            if (result.status === 201) {
+                resultEl.innerHTML = `<span class="success">✅ Client creato!</span>\n${JSON.stringify(result.data, null, 2)}`;
+                clearForm();
+            } else {
+                resultEl.innerHTML = `<span class="error">❌ Errore nella creazione!</span>\n${JSON.stringify(result, null, 2)}`;
+            }
+        }
+
+        // Aggiorna client
+        async function updateClient() {
+            const clientId = document.getElementById('clientId').value;
+            if (!clientId) {
+                alert('Inserisci l\'ID del client da aggiornare');
+                return;
+            }
+
+            const clientData = {
+                name: document.getElementById('clientName').value,
+                email: document.getElementById('clientEmail').value,
+                phone: document.getElementById('clientPhone').value,
+                company: document.getElementById('clientCompany').value,
+                address: document.getElementById('clientAddress').value,
+                city: document.getElementById('clientCity').value,
+                postal_code: document.getElementById('clientPostalCode').value,
+                country: document.getElementById('clientCountry').value,
+                status: document.getElementById('clientStatus').value,
+                notes: document.getElementById('clientNotes').value
+            };
+
+            const result = await makeRequest(`${baseUrl}/clients/${clientId}`, 'PUT', clientData);
+            const resultEl = document.getElementById('clientFormResult');
+            
+            if (result.status === 200) {
+                resultEl.innerHTML = `<span class="success">✅ Client aggiornato!</span>\n${JSON.stringify(result.data, null, 2)}`;
+            } else {
+                resultEl.innerHTML = `<span class="error">❌ Errore nell'aggiornamento!</span>\n${JSON.stringify(result, null, 2)}`;
+            }
+        }
+
+        // Visualizza client specifico
+        async function getClient() {
+            const clientId = document.getElementById('clientId').value;
+            if (!clientId) {
+                alert('Inserisci l\'ID del client');
+                return;
+            }
+
+            const result = await makeRequest(`${baseUrl}/clients/${clientId}`);
+            const resultEl = document.getElementById('clientOperationResult');
+            
+            if (result.status === 200) {
+                resultEl.innerHTML = `<span class="success">✅ Client trovato!</span>\n${JSON.stringify(result.data, null, 2)}`;
+                
+                // Popola il form con i dati del client
+                const client = result.data.data;
+                document.getElementById('clientName').value = client.name || '';
+                document.getElementById('clientEmail').value = client.email || '';
+                document.getElementById('clientPhone').value = client.phone || '';
+                document.getElementById('clientCompany').value = client.company || '';
+                document.getElementById('clientAddress').value = client.address || '';
+                document.getElementById('clientCity').value = client.city || '';
+                document.getElementById('clientPostalCode').value = client.postal_code || '';
+                document.getElementById('clientCountry').value = client.country || '';
+                document.getElementById('clientStatus').value = client.status || 'active';
+                document.getElementById('clientNotes').value = client.notes || '';
+            } else {
+                resultEl.innerHTML = `<span class="error">❌ Client non trovato!</span>\n${JSON.stringify(result, null, 2)}`;
+            }
+        }
+
+        // Elimina client
+        async function deleteClient() {
+            const clientId = document.getElementById('clientId').value;
+            if (!clientId) {
+                alert('Inserisci l\'ID del client');
+                return;
+            }
+
+            if (!confirm('Sei sicuro di voler eliminare questo client?')) {
+                return;
+            }
+
+            const result = await makeRequest(`${baseUrl}/clients/${clientId}`, 'DELETE');
+            const resultEl = document.getElementById('clientOperationResult');
+            
+            if (result.status === 200) {
+                resultEl.innerHTML = `<span class="success">✅ Client eliminato!</span>\n${JSON.stringify(result.data, null, 2)}`;
+                clearForm();
+            } else {
+                resultEl.innerHTML = `<span class="error">❌ Errore nell'eliminazione!</span>\n${JSON.stringify(result, null, 2)}`;
+            }
+        }
+
+        // Pulisci form
+        function clearForm() {
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientEmail').value = '';
+            document.getElementById('clientPhone').value = '';
+            document.getElementById('clientCompany').value = '';
+            document.getElementById('clientAddress').value = '';
+            document.getElementById('clientCity').value = '';
+            document.getElementById('clientPostalCode').value = '';
+            document.getElementById('clientCountry').value = '';
+            document.getElementById('clientStatus').value = 'active';
+            document.getElementById('clientNotes').value = '';
+            document.getElementById('clientId').value = '';
+        }
+
+        // Inizializza la pagina
+        updateConnectionStatus();
+    </script>
+</body>
+</html>

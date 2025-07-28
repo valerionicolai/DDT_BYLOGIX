@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ClientController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route per verificare l'autenticazione (endpoint di test)
     Route::get('/user', function (Request $request) {
         return $request->user();
+    });
+
+    // Route per la gestione dei clients
+    Route::prefix('clients')->group(function () {
+        Route::get('/stats', [ClientController::class, 'stats']);
+        Route::get('/', [ClientController::class, 'index']);
+        Route::post('/', [ClientController::class, 'store']);
+        Route::get('/{id}', [ClientController::class, 'show']);
+        Route::put('/{id}', [ClientController::class, 'update']);
+        Route::patch('/{id}', [ClientController::class, 'update']);
+        Route::delete('/{id}', [ClientController::class, 'destroy']);
     });
 });
 
