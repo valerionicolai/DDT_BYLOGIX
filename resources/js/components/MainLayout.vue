@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Navigation Bar -->
-    <NavigationBar />
+    <!-- Navigation Bar with Route Guarding -->
+    <AppNavigation />
 
     <!-- Main Content Area -->
     <main class="flex-1">
@@ -25,12 +25,12 @@
 </template>
 
 <script>
-import NavigationBar from './NavigationBar.vue'
+import AppNavigation from './AppNavigation.vue'
 
 export default {
   name: 'MainLayout',
   components: {
-    NavigationBar
+    AppNavigation
   }
 }
 </script>

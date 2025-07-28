@@ -5,6 +5,27 @@
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p class="mt-2 text-gray-600">Benvenuto nel sistema DTT by Logix</p>
+        
+        <!-- Admin Actions - Only visible to admins -->
+        <CanAccess requires-admin class="mt-4">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 class="text-sm font-medium text-blue-800">Azioni Amministratore</h3>
+            <div class="mt-2 flex space-x-3">
+              <router-link
+                to="/admin/users"
+                class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200"
+              >
+                Gestisci Utenti
+              </router-link>
+              <router-link
+                to="/admin/settings"
+                class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200"
+              >
+                Impostazioni Sistema
+              </router-link>
+            </div>
+          </div>
+        </CanAccess>
       </div>
 
       <!-- Stats Cards -->
@@ -76,8 +97,21 @@
 
       <!-- Recent Projects -->
       <div class="bg-white rounded-lg shadow">
-        <div class="px-6 py-4 border-b border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
           <h2 class="text-lg font-semibold text-gray-900">Progetti Recenti</h2>
+          
+          <!-- Create Project Button - Only for users with create.project permission -->
+          <CanAccess permission="create.project">
+            <router-link
+              to="/projects/create"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+            >
+              <svg class="-ml-1 mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+              </svg>
+              Nuovo Progetto
+            </router-link>
+          </CanAccess>
         </div>
         <div class="p-6">
           <div class="space-y-4">
@@ -105,6 +139,37 @@
                   {{ project.status }}
                 </span>
                 <span class="text-sm text-gray-500">{{ project.updatedAt }}</span>
+                
+                <!-- Project Actions - Based on permissions -->
+                <div class="flex items-center space-x-2">
+                  <CanAccess permission="edit.project">
+                    <button
+                      @click="editProject(project.id)"
+                      class="text-primary-600 hover:text-primary-900 text-sm font-medium"
+                    >
+                      Modifica
+                    </button>
+                  </CanAccess>
+                  
+                  <CanAccess permission="delete.project">
+                    <button
+                      @click="deleteProject(project.id)"
+                      class="text-red-600 hover:text-red-900 text-sm font-medium"
+                    >
+                      Elimina
+                    </button>
+                  </CanAccess>
+                  
+                  <!-- Admin only: Advanced settings -->
+                  <CanAccess requires-admin>
+                    <button
+                      @click="advancedSettings(project.id)"
+                      class="text-gray-600 hover:text-gray-900 text-sm font-medium"
+                    >
+                      Avanzate
+                    </button>
+                  </CanAccess>
+                </div>
               </div>
             </div>
           </div>
@@ -132,9 +197,13 @@
 
 <script>
 import { ref, onMounted } from 'vue'
+import CanAccess from '@/components/CanAccess.vue'
 
 export default {
   name: 'Dashboard',
+  components: {
+    CanAccess
+  },
   setup() {
     const stats = ref({
       totalProjects: 0,
@@ -189,6 +258,21 @@ export default {
       ]
     }
 
+    const editProject = (projectId) => {
+      console.log('Modifica progetto:', projectId)
+      // Implementare logica di modifica
+    }
+
+    const deleteProject = (projectId) => {
+      console.log('Elimina progetto:', projectId)
+      // Implementare logica di eliminazione
+    }
+
+    const advancedSettings = (projectId) => {
+      console.log('Impostazioni avanzate per progetto:', projectId)
+      // Implementare logica per impostazioni avanzate
+    }
+
     onMounted(() => {
       loadDashboardData()
     })
@@ -196,7 +280,10 @@ export default {
     return {
       stats,
       recentProjects,
-      getStatusClass
+      getStatusClass,
+      editProject,
+      deleteProject,
+      advancedSettings
     }
   }
 }
