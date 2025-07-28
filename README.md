@@ -32,9 +32,48 @@ php artisan migrate
 ```
 
 ### 3. Avvio del Server di Sviluppo
+
+**Backend (Laravel):**
 ```bash
 php artisan serve
 ```
+
+**Frontend (Vue.js + Vite):**
+```bash
+npm run dev
+```
+
+**Build per Produzione:**
+```bash
+npm run build
+```
+
+## Architettura Frontend
+
+Il frontend è sviluppato con **Vue.js 3** e utilizza le seguenti tecnologie:
+
+### Stack Tecnologico Frontend
+- **Vue.js 3**: Framework JavaScript reattivo
+- **Tailwind CSS**: Framework CSS utility-first
+- **Axios**: Client HTTP per API calls
+- **Vite**: Build tool e dev server
+- **Laravel Vite Plugin**: Integrazione con Laravel
+
+### Struttura Componenti
+```
+resources/js/
+├── app.js              # Entry point Vue.js
+├── bootstrap.js        # Configurazione Axios
+└── components/
+    ├── App.vue         # Componente principale
+    └── FeatureCard.vue # Componente riutilizzabile
+```
+
+### Configurazione Sviluppo
+- **Hot Reload**: Attivo durante lo sviluppo
+- **CSS Preprocessing**: Tailwind CSS integrato
+- **Asset Bundling**: Gestito da Vite
+- **API Integration**: Axios preconfigurato per Laravel
 
 ## Struttura del Progetto
 
@@ -79,9 +118,12 @@ git push origin feature/s[sprint]-[task-id]-[description]
 
 - **Backend**: Laravel 12
 - **Database**: SQLite (sviluppo) / MySQL 8.0 (produzione)
-- **Frontend**: Blade Templates + Vite
+- **Frontend**: Vue.js 3 + Tailwind CSS
+- **Build Tool**: Vite
+- **HTTP Client**: Axios
 - **Autenticazione**: Laravel Sanctum
 - **Testing**: PHPUnit
+- **Version Control**: Git con GitFlow
 
 ## Team di Sviluppo
 
