@@ -4,6 +4,7 @@ import { applyRouteMiddleware } from './middleware'
 // Import delle pagine
 import Dashboard from '@/pages/Dashboard.vue'
 import Projects from '@/pages/Projects.vue'
+import ProjectCreate from '@/pages/ProjectCreate.vue'
 import Clients from '@/pages/Clients.vue'
 import Documents from '@/pages/Documents.vue'
 import DocumentCreate from '@/pages/DocumentCreate.vue'
@@ -39,6 +40,16 @@ const routes = [
       title: 'Progetti - DTT by Logix',
       requiresAuth: true,
       requiresPermission: 'view.projects'
+    }
+  },
+  {
+    path: '/projects/create',
+    name: 'ProjectCreate',
+    component: ProjectCreate,
+    meta: {
+      title: 'Nuovo Progetto - DTT by Logix',
+      requiresAuth: true,
+      requiresPermission: 'create.project'
     }
   },
   {
