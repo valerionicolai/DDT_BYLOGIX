@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\MaterialTypeController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\UserController;
@@ -85,6 +86,27 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::patch('/{id}', [MaterialTypeController::class, 'update']);
             Route::delete('/{id}', [MaterialTypeController::class, 'destroy']);
         });
+    });
+
+    // Document routes
+    Route::prefix('documents')->group(function () {
+        // Public search routes (for barcode scanning)
+        Route::get('/search', [DocumentController::class, 'searchByBarcode']);
+        
+        // Export route
+        Route::get('/export/csv', [DocumentController::class, 'exportCsv']);
+        
+        // Standard CRUD routes
+        Route::get('/', [DocumentController::class, 'index']);
+        Route::get('/{document}', [DocumentController::class, 'show']);
+        Route::post('/', [DocumentController::class, 'store']);
+        Route::put('/{document}', [DocumentController::class, 'update']);
+        Route::patch('/{document}', [DocumentController::class, 'update']);
+        Route::delete('/{document}', [DocumentController::class, 'destroy']);
+        
+        // Special routes
+        Route::post('/{document}/regenerate-barcode', [DocumentController::class, 'regenerateBarcode']);
+        Route::get('/{document}/download', [DocumentController::class, 'download']);
     });
 
     // User management routes (admin only for most operations)
