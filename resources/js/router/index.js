@@ -5,6 +5,8 @@ import { applyRouteMiddleware } from './middleware'
 import Dashboard from '@/pages/Dashboard.vue'
 import Projects from '@/pages/Projects.vue'
 import Clients from '@/pages/Clients.vue'
+import Documents from '@/pages/Documents.vue'
+import DocumentDetail from '@/pages/DocumentDetail.vue'
 import Settings from '@/pages/Settings.vue'
 import Login from '@/pages/Login.vue'
 
@@ -46,6 +48,26 @@ const routes = [
       title: 'Clienti - DTT by Logix',
       requiresAuth: true,
       requiresPermission: 'view.clients'
+    }
+  },
+  {
+    path: '/documents',
+    name: 'Documents',
+    component: Documents,
+    meta: {
+      title: 'Documenti - DTT by Logix',
+      requiresAuth: true,
+      requiresPermission: 'view.documents'
+    }
+  },
+  {
+    path: '/documents/:id',
+    name: 'DocumentDetail',
+    component: DocumentDetail,
+    meta: {
+      title: 'Dettaglio Documento - DTT by Logix',
+      requiresAuth: true,
+      requiresPermission: 'view.documents'
     }
   },
   {
