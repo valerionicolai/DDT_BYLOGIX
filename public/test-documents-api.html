@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Documents API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .response {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .material-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .material-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Documents API - Sprint 2</h1>
+    
+    <!-- Login Section -->
+    <div class="container">
+        <h2>1. Login</h2>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="admin@example.com">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" value="password">
+        </div>
+        <button onclick="login()">Login</button>
+        <div id="loginResponse" class="response" style="display: none;"></div>
+    </div>
+
+    <!-- Create Document Section -->
+    <div class="container">
+        <h2>2. Create Entry Document with Materials</h2>
+        
+        <div class="grid">
+            <div class="form-group">
+                <label for="document_type">Document Type:</label>
+                <select id="document_type">
+                    <option value="entry">Entry</option>
+                    <option value="delivery">Delivery</option>
+                    <option value="invoice">Invoice</option>
+                    <option value="receipt">Receipt</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="supplier_name">Supplier Name:</label>
+                <input type="text" id="supplier_name" value="Fornitore Test SRL">
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="supplier_vat">Supplier VAT:</label>
+                <input type="text" id="supplier_vat" value="IT12345678901">
+            </div>
+            <div class="form-group">
+                <label for="document_date">Document Date:</label>
+                <input type="date" id="document_date">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="supplier_address">Supplier Address:</label>
+            <textarea id="supplier_address" rows="2">Via Roma 123, 00100 Roma (RM)</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Notes:</label>
+            <textarea id="notes" rows="3">Documento di test per Sprint 2</textarea>
+        </div>
+
+        <h3>Materials</h3>
+        <div id="materials-container">
+            <!-- Materials will be added here -->
+        </div>
+        
+        <button onclick="addMaterial()">Add Material</button>
+        <button onclick="createDocument()">Create Document</button>
+        <div id="createResponse" class="response" style="display: none;"></div>
+    </div>
+
+    <!-- S2-B03: Get Documents with Filters Section -->
+    <div class="container">
+        <h2>3. S2-B03: Get Documents (Lista con Paginazione e Filtri)</h2>
+        
+        <div class="grid">
+            <div class="form-group">
+                <label for="filter_status">Filter by Status:</label>
+                <select id="filter_status">
+                    <option value="">All</option>
+                    <option value="draft">Draft</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="received">Received</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="filter_type">Filter by Type:</label>
+                <select id="filter_type">
+                    <option value="">All</option>
+                    <option value="entry">Entry</option>
+                    <option value="delivery">Delivery</option>
+                    <option value="invoice">Invoice</option>
+                    <option value="receipt">Receipt</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="filter_supplier">Filter by Supplier:</label>
+                <input type="text" id="filter_supplier" placeholder="Nome fornitore">
+            </div>
+            <div class="form-group">
+                <label for="per_page">Per Page:</label>
+                <select id="per_page">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15" selected>15</option>
+                    <option value="25">25</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="start_date">Start Date:</label>
+                <input type="date" id="start_date">
+            </div>
+            <div class="form-group">
+                <label for="end_date">End Date:</label>
+                <input type="date" id="end_date">
+            </div>
+        </div>
+
+        <button onclick="getDocumentsWithFilters()">Get Documents with Filters</button>
+        <button onclick="getDocuments()">Get All Documents</button>
+        <button onclick="getDocumentStatistics()">Get Statistics</button>
+        <div id="documentsResponse" class="response" style="display: none;"></div>
+    </div>
+
+    <!-- S2-B03: Get Document Detail Section -->
+    <div class="container">
+        <h2>4. S2-B03: Get Document Detail (GET /api/v1/documents/{id})</h2>
+        
+        <div class="form-group">
+            <label for="document_id">Document ID:</label>
+            <input type="number" id="document_id" placeholder="Inserisci ID documento" min="1">
+        </div>
+        
+        <button onclick="getDocumentDetail()">Get Document Detail</button>
+        <button onclick="getDocumentMaterials()">Get Document Materials</button>
+        <div id="documentDetailResponse" class="response" style="display: none;"></div>
+    </div>
+
+    <!-- S2-B04: Update Document Section -->
+    <div class="container">
+        <h2>5. S2-B04: Update Document (PUT /api/v1/documents/{id})</h2>
+        
+        <div class="form-group">
+            <label for="update_document_id">Document ID to Update:</label>
+            <input type="number" id="update_document_id" placeholder="Inserisci ID documento" min="1">
+        </div>
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="update_document_type">Document Type:</label>
+                <select id="update_document_type">
+                    <option value="entry">Entry</option>
+                    <option value="delivery">Delivery</option>
+                    <option value="invoice">Invoice</option>
+                    <option value="receipt">Receipt</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="update_status">Status:</label>
+                <select id="update_status">
+                    <option value="draft">Draft</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="received">Received</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="update_supplier_name">Supplier Name:</label>
+                <input type="text" id="update_supplier_name" placeholder="Nome fornitore aggiornato">
+            </div>
+            <div class="form-group">
+                <label for="update_supplier_vat">Supplier VAT:</label>
+                <input type="text" id="update_supplier_vat" placeholder="P.IVA aggiornata">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="update_notes">Notes:</label>
+            <textarea id="update_notes" rows="3" placeholder="Note aggiornate"></textarea>
+        </div>
+
+        <button onclick="updateDocument()">Update Document</button>
+        <div id="updateResponse" class="response" style="display: none;"></div>
+    </div>
+
+    <!-- S2-B04: Delete Document Section -->
+    <div class="container">
+        <h2>6. S2-B04: Delete Document (DELETE /api/v1/documents/{id})</h2>
+        
+        <div class="form-group">
+            <label for="delete_document_id">Document ID to Delete:</label>
+            <input type="number" id="delete_document_id" placeholder="Inserisci ID documento" min="1">
+        </div>
+        
+        <button class="btn-danger" onclick="deleteDocument()">Delete Document</button>
+        <div id="deleteResponse" class="response" style="display: none;"></div>
+    </div>
+
+    <!-- Get Materials Section -->
+    <div class="container">
+        <h2>7. Get Materials</h2>
+        <button onclick="getMaterials()">Get All Materials</button>
+        <button onclick="getMaterialStatistics()">Get Statistics</button>
+        <div id="materialsResponse" class="response" style="display: none;"></div>
+    </div>
+
+    <!-- Automatic Tests Section -->
+    <div class="container" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h2>🚀 Test Automatici S2-B03 e S2-B04</h2>
+        <p>Clicca il pulsante per eseguire automaticamente tutti i test degli endpoint implementati.</p>
+        <button onclick="runAutomaticTests()" style="background: #28a745; color: white; font-weight: bold; padding: 15px 30px; font-size: 16px;">
+            🧪 Esegui Test Automatici
+        </button>
+        <div id="automaticTestsResponse" class="response" style="display: none; background: rgba(255,255,255,0.1); color: white;"></div>
+    </div>
+
+    <script>
+        let authToken = '';
+        let materialCounter = 0;
+
+        // Set today's date as default
+        document.getElementById('document_date').value = new Date().toISOString().split('T')[0];
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                document.getElementById('loginResponse').style.display = 'block';
+                document.getElementById('loginResponse').textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success && data.data.token) {
+                    authToken = data.data.token;
+                    alert('Login successful!');
+                }
+            } catch (error) {
+                document.getElementById('loginResponse').style.display = 'block';
+                document.getElementById('loginResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        function addMaterial() {
+            materialCounter++;
+            const container = document.getElementById('materials-container');
+            
+            const materialDiv = document.createElement('div');
+            materialDiv.className = 'material-item';
+            materialDiv.id = `material-${materialCounter}`;
+            
+            materialDiv.innerHTML = `
+                <div class="material-header">
+                    <h4>Material ${materialCounter}</h4>
+                    <button class="btn-danger" onclick="removeMaterial(${materialCounter})">Remove</button>
+                </div>
+                
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Material Type ID:</label>
+                        <input type="number" name="material_type_id" value="1" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <input type="text" name="description" value="Materiale Test ${materialCounter}">
+                    </div>
+                </div>
+                
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Quantity:</label>
+                        <input type="number" name="quantity" value="10" step="0.001" min="0.001">
+                    </div>
+                    <div class="form-group">
+                        <label>Unit of Measure:</label>
+                        <input type="text" name="unit_of_measure" value="pz">
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Price (€):</label>
+                        <input type="number" name="unit_price" value="15.50" step="0.01" min="0">
+                    </div>
+                </div>
+                
+                <div class="grid">
+                    <div class="form-group">
+                        <label>VAT Rate (%):</label>
+                        <input type="number" name="vat_rate" value="22" step="0.01" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Lot Number:</label>
+                        <input type="text" name="lot_number" value="LOT${materialCounter}2025">
+                    </div>
+                </div>
+                
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Location:</label>
+                        <input type="text" name="location" value="Magazzino A">
+                    </div>
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select name="status">
+                            <option value="received">Received</option>
+                            <option value="ordered">Ordered</option>
+                            <option value="used">Used</option>
+                            <option value="returned">Returned</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Notes:</label>
+                    <textarea name="notes" rows="2">Note per materiale ${materialCounter}</textarea>
+                </div>
+            `;
+            
+            container.appendChild(materialDiv);
+        }
+
+        function removeMaterial(id) {
+            const element = document.getElementById(`material-${id}`);
+            if (element) {
+                element.remove();
+            }
+        }
+
+        function collectMaterials() {
+            const materials = [];
+            const materialItems = document.querySelectorAll('.material-item');
+            
+            materialItems.forEach(item => {
+                const material = {};
+                const inputs = item.querySelectorAll('input, select, textarea');
+                
+                inputs.forEach(input => {
+                    if (input.name) {
+                        let value = input.value;
+                        
+                        // Convert numeric fields
+                        if (['material_type_id', 'quantity', 'unit_price', 'vat_rate'].includes(input.name)) {
+                            value = parseFloat(value) || 0;
+                        }
+                        
+                        material[input.name] = value;
+                    }
+                });
+                
+                if (material.description) {
+                    materials.push(material);
+                }
+            });
+            
+            return materials;
+        }
+
+        async function createDocument() {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+
+            const materials = collectMaterials();
+            if (materials.length === 0) {
+                alert('Please add at least one material!');
+                return;
+            }
+
+            const documentData = {
+                document_type: document.getElementById('document_type').value,
+                supplier_name: document.getElementById('supplier_name').value,
+                supplier_vat: document.getElementById('supplier_vat').value,
+                supplier_address: document.getElementById('supplier_address').value,
+                document_date: document.getElementById('document_date').value,
+                notes: document.getElementById('notes').value,
+                materials: materials
+            };
+
+            try {
+                const response = await fetch('/api/documents', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(documentData)
+                });
+
+                const data = await response.json();
+                document.getElementById('createResponse').style.display = 'block';
+                document.getElementById('createResponse').textContent = JSON.stringify(data, null, 2);
+
+                if (data.success) {
+                    alert('Document created successfully!');
+                }
+            } catch (error) {
+                document.getElementById('createResponse').style.display = 'block';
+                document.getElementById('createResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getDocumentsWithFilters() {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+
+            // Build query parameters
+            const params = new URLSearchParams();
+            
+            const status = document.getElementById('filter_status').value;
+            if (status) params.append('status', status);
+            
+            const type = document.getElementById('filter_type').value;
+            if (type) params.append('document_type', type);
+            
+            const supplier = document.getElementById('filter_supplier').value;
+            if (supplier) params.append('supplier', supplier);
+            
+            const startDate = document.getElementById('start_date').value;
+            if (startDate) params.append('start_date', startDate);
+            
+            const endDate = document.getElementById('end_date').value;
+            if (endDate) params.append('end_date', endDate);
+            
+            const perPage = document.getElementById('per_page').value;
+            params.append('per_page', perPage);
+
+            try {
+                const url = `/api/documents${params.toString() ? '?' + params.toString() : ''}`;
+                const response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('documentsResponse').style.display = 'block';
+                document.getElementById('documentsResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('documentsResponse').style.display = 'block';
+                document.getElementById('documentsResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getDocumentDetail() {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+
+            const documentId = document.getElementById('document_id').value;
+            if (!documentId) {
+                alert('Please enter a document ID!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/documents/${documentId}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('documentDetailResponse').style.display = 'block';
+                document.getElementById('documentDetailResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('documentDetailResponse').style.display = 'block';
+                document.getElementById('documentDetailResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getDocumentMaterials() {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+
+            const documentId = document.getElementById('document_id').value;
+            if (!documentId) {
+                alert('Please enter a document ID!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/documents/${documentId}/materials`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('documentDetailResponse').style.display = 'block';
+                document.getElementById('documentDetailResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('documentDetailResponse').style.display = 'block';
+                document.getElementById('documentDetailResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function updateDocument() {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+
+            const documentId = document.getElementById('update_document_id').value;
+            if (!documentId) {
+                alert('Please enter a document ID!');
+                return;
+            }
+
+            // Collect update data (only include fields that have values)
+            const updateData = {};
+            
+            const documentType = document.getElementById('update_document_type').value;
+            if (documentType) updateData.document_type = documentType;
+            
+            const status = document.getElementById('update_status').value;
+            if (status) updateData.status = status;
+            
+            const supplierName = document.getElementById('update_supplier_name').value;
+            if (supplierName) updateData.supplier_name = supplierName;
+            
+            const supplierVat = document.getElementById('update_supplier_vat').value;
+            if (supplierVat) updateData.supplier_vat = supplierVat;
+            
+            const notes = document.getElementById('update_notes').value;
+            if (notes) updateData.notes = notes;
+
+            if (Object.keys(updateData).length === 0) {
+                alert('Please fill at least one field to update!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/documents/${documentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                const data = await response.json();
+                document.getElementById('updateResponse').style.display = 'block';
+                document.getElementById('updateResponse').textContent = JSON.stringify(data, null, 2);
+
+                if (data.success) {
+                    alert('Document updated successfully!');
+                }
+            } catch (error) {
+                document.getElementById('updateResponse').style.display = 'block';
+                document.getElementById('updateResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function deleteDocument() {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+
+            const documentId = document.getElementById('delete_document_id').value;
+            if (!documentId) {
+                alert('Please enter a document ID!');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete document ${documentId}? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/documents/${documentId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('deleteResponse').style.display = 'block';
+                document.getElementById('deleteResponse').textContent = JSON.stringify(data, null, 2);
+
+                if (data.success) {
+                    alert('Document deleted successfully!');
+                }
+            } catch (error) {
+                document.getElementById('deleteResponse').style.display = 'block';
+                document.getElementById('deleteResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getDocuments() {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/documents', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('documentsResponse').style.display = 'block';
+                document.getElementById('documentsResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('documentsResponse').style.display = 'block';
+                document.getElementById('documentsResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getDocumentStatistics() {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/documents/statistics', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('documentsResponse').style.display = 'block';
+                document.getElementById('documentsResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('documentsResponse').style.display = 'block';
+                document.getElementById('documentsResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getMaterials() {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/materials', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('materialsResponse').style.display = 'block';
+                document.getElementById('materialsResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('materialsResponse').style.display = 'block';
+                document.getElementById('materialsResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getMaterialStatistics() {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/materials/statistics', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('materialsResponse').style.display = 'block';
+                document.getElementById('materialsResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('materialsResponse').style.display = 'block';
+                document.getElementById('materialsResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Add first material by default
+        addMaterial();
+
+        // Automatic Tests Function
+        async function runAutomaticTests() {
+            const responseDiv = document.getElementById('automaticTestsResponse');
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = '<h3>🚀 Inizio test automatico degli endpoint S2-B03 e S2-B04</h3>';
+            
+            let testResults = [];
+            let createdDocumentId = null;
+            
+            try {
+                // Test 1: Login
+                responseDiv.innerHTML += '<p>📝 Test 1: Login...</p>';
+                document.getElementById('email').value = 'admin@example.com';
+                document.getElementById('password').value = 'password';
+                
+                const loginResponse = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        email: 'admin@example.com', 
+                        password: 'password' 
+                    })
+                });
+                
+                const loginData = await loginResponse.json();
+                
+                if (loginData.success && loginData.data.token) {
+                    authToken = loginData.data.token;
+                    testResults.push('✅ Login riuscito');
+                    responseDiv.innerHTML += '<p style="color: #28a745;">✅ Login riuscito</p>';
+                } else {
+                    testResults.push('❌ Login fallito');
+                    responseDiv.innerHTML += '<p style="color: #dc3545;">❌ Login fallito</p>';
+                    throw new Error('Login failed');
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Test 2: Creazione documento (S2-B03)
+                responseDiv.innerHTML += '<p>📝 Test 2: Creazione documento (S2-B03)...</p>';
+                
+                const createData = {
+                    document_type: 'entry',
+                    document_date: new Date().toISOString().split('T')[0],
+                    supplier_name: 'Test Supplier Automatico',
+                    supplier_vat: '12345678901',
+                    status: 'draft',
+                    notes: 'Documento creato automaticamente per test',
+                    materials: [{
+                        material_type_id: 1,
+                        description: 'Materiale Test Automatico',
+                        quantity: 10,
+                        unit_of_measure: 'pz',
+                        unit_price: 15.50,
+                        vat_rate: 22,
+                        lot_number: 'LOTTESTAUT2025',
+                        location: 'Magazzino Test',
+                        status: 'received'
+                    }]
+                };
+                
+                const createResponse = await fetch('/api/documents', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(createData)
+                });
+                
+                const createResult = await createResponse.json();
+                
+                if (createResult.success && createResult.data.id) {
+                    createdDocumentId = createResult.data.id;
+                    testResults.push('✅ Documento creato con successo');
+                    responseDiv.innerHTML += `<p style="color: #28a745;">✅ Documento creato con successo (ID: ${createdDocumentId})</p>`;
+                } else {
+                    testResults.push('❌ Creazione documento fallita');
+                    responseDiv.innerHTML += '<p style="color: #dc3545;">❌ Creazione documento fallita</p>';
+                    throw new Error('Document creation failed');
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Test 3: Lista documenti (S2-B04)
+                responseDiv.innerHTML += '<p>📝 Test 3: Lista documenti (S2-B04)...</p>';
+                
+                const listResponse = await fetch('/api/documents', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                const listResult = await listResponse.json();
+                
+                if (listResult.success && listResult.data.length > 0) {
+                    testResults.push('✅ Lista documenti caricata con successo');
+                    responseDiv.innerHTML += `<p style="color: #28a745;">✅ Lista documenti caricata con successo (${listResult.data.length} documenti)</p>`;
+                } else {
+                    testResults.push('❌ Lista documenti vuota o errore');
+                    responseDiv.innerHTML += '<p style="color: #dc3545;">❌ Lista documenti vuota o errore</p>';
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Test 4: Dettaglio documento (S2-B04)
+                if (createdDocumentId) {
+                    responseDiv.innerHTML += '<p>📝 Test 4: Dettaglio documento (S2-B04)...</p>';
+                    
+                    const detailResponse = await fetch(`/api/documents/${createdDocumentId}`, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    });
+                    
+                    const detailResult = await detailResponse.json();
+                    
+                    if (detailResult.success && detailResult.data.id) {
+                        testResults.push('✅ Dettaglio documento caricato con successo');
+                        responseDiv.innerHTML += '<p style="color: #28a745;">✅ Dettaglio documento caricato con successo</p>';
+                    } else {
+                        testResults.push('❌ Caricamento dettaglio documento fallito');
+                        responseDiv.innerHTML += '<p style="color: #dc3545;">❌ Caricamento dettaglio documento fallito</p>';
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Test 5: Aggiornamento documento (S2-B04)
+                    responseDiv.innerHTML += '<p>📝 Test 5: Aggiornamento documento (S2-B04)...</p>';
+                    
+                    const updateData = {
+                        supplier_name: 'Test Supplier Aggiornato',
+                        notes: 'Documento aggiornato automaticamente per test'
+                    };
+                    
+                    const updateResponse = await fetch(`/api/documents/${createdDocumentId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        },
+                        body: JSON.stringify(updateData)
+                    });
+                    
+                    const updateResult = await updateResponse.json();
+                    
+                    if (updateResult.success) {
+                        testResults.push('✅ Documento aggiornato con successo');
+                        responseDiv.innerHTML += '<p style="color: #28a745;">✅ Documento aggiornato con successo</p>';
+                    } else {
+                        testResults.push('❌ Aggiornamento documento fallito');
+                        responseDiv.innerHTML += '<p style="color: #dc3545;">❌ Aggiornamento documento fallito</p>';
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Test 6: Eliminazione documento (S2-B04)
+                    responseDiv.innerHTML += '<p>📝 Test 6: Eliminazione documento (S2-B04)...</p>';
+                    
+                    const deleteResponse = await fetch(`/api/documents/${createdDocumentId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    });
+                    
+                    const deleteResult = await deleteResponse.json();
+                    
+                    if (deleteResult.success) {
+                        testResults.push('✅ Documento eliminato con successo');
+                        responseDiv.innerHTML += '<p style="color: #28a745;">✅ Documento eliminato con successo</p>';
+                    } else {
+                        testResults.push('❌ Eliminazione documento fallita');
+                        responseDiv.innerHTML += '<p style="color: #dc3545;">❌ Eliminazione documento fallita</p>';
+                    }
+                }
+                
+                // Riepilogo finale
+                responseDiv.innerHTML += '<h3>📊 Riepilogo Test:</h3>';
+                testResults.forEach(result => {
+                    const color = result.includes('✅') ? '#28a745' : '#dc3545';
+                    responseDiv.innerHTML += `<p style="color: ${color};">${result}</p>`;
+                });
+                
+                const successCount = testResults.filter(r => r.includes('✅')).length;
+                const totalCount = testResults.length;
+                
+                responseDiv.innerHTML += `<h3 style="color: ${successCount === totalCount ? '#28a745' : '#ffc107'};">
+                    🎯 Test completati: ${successCount}/${totalCount}
+                </h3>`;
+                
+            } catch (error) {
+                responseDiv.innerHTML += `<p style="color: #dc3545;">❌ Errore durante i test: ${error.message}</p>`;
+                console.error('Errore durante i test automatici:', error);
+            }
+        }
+    </script>
+</body>
+</html>
