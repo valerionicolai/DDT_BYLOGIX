@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test S3 Barcode Endpoints - Sprint 3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+        input, select, button, textarea {
+            margin: 5px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            padding: 10px 15px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .auth-status {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .auth-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .auth-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .barcode-image {
+            max-width: 300px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: white;
+        }
+        .endpoint-info {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test S3 Barcode Endpoints - Sprint 3</h1>
+    
+    <div class="container">
+        <h2>Stato Autenticazione</h2>
+        <div id="authStatus" class="auth-status auth-error">Non autenticato</div>
+        <button onclick="autoLogin()">Login Automatico</button>
+    </div>
+
+    <!-- S3-B03: Get Barcode Image -->
+    <div class="container">
+        <div class="test-section">
+            <h3>S3-B03: Get Barcode Image (PNG/SVG)</h3>
+            <div class="endpoint-info">GET /api/documents/{id}/barcode/image</div>
+            <p>Restituisce l'immagine del barcode per un documento specifico.</p>
+            
+            <label>Document ID:</label>
+            <input type="number" id="imageDocumentId" value="1" placeholder="Document ID">
+            
+            <button onclick="getBarcodeImage()">Get Barcode Image</button>
+            
+            <div id="imageResult" class="result info">Clicca il pulsante per ottenere l'immagine del barcode...</div>
+            <div id="barcodeImageContainer"></div>
+        </div>
+    </div>
+
+    <!-- S3-B04: Search by Barcode -->
+    <div class="container">
+        <div class="test-section">
+            <h3>S3-B04: Search Documents by Barcode</h3>
+            <div class="endpoint-info">GET /api/documents/by-barcode/{code_value}</div>
+            <p>Cerca documenti utilizzando il codice del barcode.</p>
+            
+            <label>Barcode Code:</label>
+            <input type="text" id="searchBarcodeCode" placeholder="Inserisci codice barcode" style="width: 200px;">
+            
+            <button onclick="searchByBarcode()">Search Document</button>
+            
+            <div id="searchResult" class="result info">Inserisci un codice barcode e clicca per cercare...</div>
+        </div>
+    </div>
+
+    <!-- S3-B05: Regenerate Barcode -->
+    <div class="container">
+        <div class="test-section">
+            <h3>S3-B05: Regenerate Barcode</h3>
+            <div class="endpoint-info">POST /api/documents/{id}/regenerate-barcode</div>
+            <p>Rigenera il barcode per un documento esistente.</p>
+            
+            <label>Document ID:</label>
+            <input type="number" id="regenDocumentId" value="1" placeholder="Document ID">
+            
+            <label>Barcode Type:</label>
+            <select id="regenBarcodeType">
+                <option value="CODE128">CODE128</option>
+                <option value="CODE39">CODE39</option>
+                <option value="EAN13">EAN13</option>
+                <option value="EAN8">EAN8</option>
+            </select>
+            
+            <label>Format:</label>
+            <select id="regenBarcodeFormat">
+                <option value="png">PNG</option>
+                <option value="svg">SVG</option>
+            </select>
+            
+            <label>Width:</label>
+            <input type="number" id="regenWidth" value="2" min="1" max="10">
+            
+            <label>Height:</label>
+            <input type="number" id="regenHeight" value="30" min="10" max="100">
+            
+            <label>Force Regeneration:</label>
+            <input type="checkbox" id="forceRegeneration">
+            
+            <button onclick="regenerateBarcode()">Regenerate Barcode</button>
+            
+            <div id="regenResult" class="result info">Configura i parametri e clicca per rigenerare il barcode...</div>
+        </div>
+    </div>
+
+    <!-- Helper Functions Test -->
+    <div class="container">
+        <div class="test-section">
+            <h3>Helper: Create Test Document</h3>
+            <p>Crea un documento di test per testare gli endpoint sopra.</p>
+            
+            <button onclick="createTestDocument()">Create Test Document</button>
+            
+            <div id="createResult" class="result info">Clicca per creare un documento di test...</div>
+        </div>
+    </div>
+
+    <script>
+        let authToken = null;
+
+        // Auto login function
+        async function autoLogin() {
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@dttbylogix.com',
+                        password: 'password123'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success && data.data.token) {
+                    authToken = data.data.token;
+                    document.getElementById('authStatus').textContent = `Autenticato come: ${data.data.user.name} (${data.data.user.role})`;
+                    document.getElementById('authStatus').className = 'auth-status auth-success';
+                } else {
+                    throw new Error(data.message || 'Login failed');
+                }
+            } catch (error) {
+                document.getElementById('authStatus').textContent = `Errore login: ${error.message}`;
+                document.getElementById('authStatus').className = 'auth-status auth-error';
+            }
+        }
+
+        // Helper function for API calls
+        async function apiCall(url, options = {}) {
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authToken ? `Bearer ${authToken}` : '',
+                    ...options.headers
+                }
+            };
+
+            return fetch(url, { ...defaultOptions, ...options });
+        }
+
+        // S3-B03: Get Barcode Image
+        async function getBarcodeImage() {
+            const documentId = document.getElementById('imageDocumentId').value;
+            const resultDiv = document.getElementById('imageResult');
+            const imageContainer = document.getElementById('barcodeImageContainer');
+            
+            if (!documentId) {
+                resultDiv.textContent = '❌ Inserisci un Document ID valido';
+                resultDiv.className = 'result error';
+                return;
+            }
+
+            try {
+                resultDiv.textContent = '🔄 Recuperando immagine barcode...';
+                resultDiv.className = 'result info';
+
+                const response = await apiCall(`/api/documents/${documentId}/barcode/image`);
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const imageUrl = URL.createObjectURL(blob);
+                    
+                    imageContainer.innerHTML = `
+                        <h4>Barcode Image:</h4>
+                        <img src="${imageUrl}" alt="Barcode" class="barcode-image">
+                        <p>Content-Type: ${response.headers.get('content-type')}</p>
+                        <p>Size: ${blob.size} bytes</p>
+                    `;
+                    
+                    resultDiv.textContent = '✅ Immagine barcode recuperata con successo!';
+                    resultDiv.className = 'result success';
+                } else {
+                    const errorData = await response.json();
+                    resultDiv.textContent = `❌ Errore: ${errorData.message}`;
+                    resultDiv.className = 'result error';
+                    imageContainer.innerHTML = '';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+                imageContainer.innerHTML = '';
+            }
+        }
+
+        // S3-B04: Search by Barcode
+        async function searchByBarcode() {
+            const barcodeCode = document.getElementById('searchBarcodeCode').value.trim();
+            const resultDiv = document.getElementById('searchResult');
+            
+            if (!barcodeCode) {
+                resultDiv.textContent = '❌ Inserisci un codice barcode valido';
+                resultDiv.className = 'result error';
+                return;
+            }
+
+            try {
+                resultDiv.textContent = '🔄 Cercando documento per barcode...';
+                resultDiv.className = 'result info';
+
+                const response = await apiCall(`/api/documents/by-barcode/${encodeURIComponent(barcodeCode)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const doc = data.data;
+                    let output = `✅ Documento trovato!\n\n`;
+                    output += `ID: ${doc.id}\n`;
+                    output += `Numero: ${doc.document_number}\n`;
+                    output += `Tipo: ${doc.document_type}\n`;
+                    output += `Fornitore: ${doc.supplier_name}\n`;
+                    output += `Data: ${doc.document_date}\n`;
+                    output += `Stato: ${doc.status}\n\n`;
+                    
+                    if (doc.barcode) {
+                        output += `Barcode Info:\n`;
+                        output += `  Codice: ${doc.barcode.code}\n`;
+                        output += `  Tipo: ${doc.barcode.type}\n`;
+                        output += `  Formato: ${doc.barcode.format}\n`;
+                        output += `  Generato: ${doc.barcode.generated_at}\n`;
+                        output += `  URL: ${doc.barcode.image_url}\n`;
+                    }
+                    
+                    output += `\nRisposta completa:\n${JSON.stringify(data, null, 2)}`;
+                    
+                    resultDiv.textContent = output;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = `❌ ${data.message}\n\nRisposta:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // S3-B05: Regenerate Barcode
+        async function regenerateBarcode() {
+            const documentId = document.getElementById('regenDocumentId').value;
+            const type = document.getElementById('regenBarcodeType').value;
+            const format = document.getElementById('regenBarcodeFormat').value;
+            const width = document.getElementById('regenWidth').value;
+            const height = document.getElementById('regenHeight').value;
+            const force = document.getElementById('forceRegeneration').checked;
+            const resultDiv = document.getElementById('regenResult');
+            
+            if (!documentId) {
+                resultDiv.textContent = '❌ Inserisci un Document ID valido';
+                resultDiv.className = 'result error';
+                return;
+            }
+
+            try {
+                resultDiv.textContent = '🔄 Rigenerando barcode...';
+                resultDiv.className = 'result info';
+
+                const requestBody = {
+                    type: type,
+                    format: format,
+                    width: parseInt(width),
+                    height: parseInt(height),
+                    force: force
+                };
+
+                const response = await apiCall(`/api/documents/${documentId}/regenerate-barcode`, {
+                    method: 'POST',
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const barcode = data.data;
+                    let output = `✅ Barcode rigenerato con successo!\n\n`;
+                    output += `ID: ${barcode.id}\n`;
+                    output += `Codice: ${barcode.code}\n`;
+                    output += `Tipo: ${barcode.type}\n`;
+                    output += `Formato: ${barcode.format}\n`;
+                    output += `Dimensioni: ${width}x${height}\n`;
+                    output += `Attivo: ${barcode.is_active}\n`;
+                    output += `Generato: ${barcode.generated_at}\n`;
+                    output += `URL: ${barcode.image_url}\n`;
+                    
+                    if (data.previous_barcode_deactivated) {
+                        output += `\nBarcode precedente disattivato: ${data.previous_barcode_deactivated}\n`;
+                    }
+                    
+                    output += `\nRisposta completa:\n${JSON.stringify(data, null, 2)}`;
+                    
+                    resultDiv.textContent = output;
+                    resultDiv.className = 'result success';
+                    
+                    // Update search field with new barcode code
+                    document.getElementById('searchBarcodeCode').value = barcode.code;
+                } else {
+                    resultDiv.textContent = `❌ ${data.message}\n\nRisposta:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Helper: Create Test Document
+        async function createTestDocument() {
+            const resultDiv = document.getElementById('createResult');
+            
+            try {
+                resultDiv.textContent = '🔄 Creando documento di test...';
+                resultDiv.className = 'result info';
+
+                const testDocument = {
+                    document_type: 'entry',
+                    supplier_name: 'Test Supplier S3',
+                    supplier_vat: 'IT12345678901',
+                    document_date: new Date().toISOString().split('T')[0],
+                    status: 'draft',
+                    notes: 'Documento creato per test S3 endpoints',
+                    materials: [
+                        {
+                            material_type_id: 1,
+                            quantity: 10,
+                            unit_price: 15.50,
+                            description: 'Test Material for S3'
+                        }
+                    ]
+                };
+
+                const response = await apiCall('/api/documents', {
+                    method: 'POST',
+                    body: JSON.stringify(testDocument)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const doc = data.data;
+                    let output = `✅ Documento creato con successo!\n\n`;
+                    output += `ID: ${doc.id}\n`;
+                    output += `Numero: ${doc.document_number}\n`;
+                    output += `Tipo: ${doc.document_type}\n`;
+                    output += `Fornitore: ${doc.supplier_name}\n`;
+                    
+                    // Update form fields with new document ID
+                    document.getElementById('imageDocumentId').value = doc.id;
+                    document.getElementById('regenDocumentId').value = doc.id;
+                    
+                    // If document has barcode, update search field
+                    if (doc.barcodes && doc.barcodes.length > 0) {
+                        const activeBarcode = doc.barcodes.find(b => b.is_active);
+                        if (activeBarcode) {
+                            document.getElementById('searchBarcodeCode').value = activeBarcode.code;
+                            output += `Barcode: ${activeBarcode.code}\n`;
+                        }
+                    }
+                    
+                    output += `\nRisposta completa:\n${JSON.stringify(data, null, 2)}`;
+                    
+                    resultDiv.textContent = output;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = `❌ Errore nella creazione:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Auto-login on page load
+        window.onload = function() {
+            autoLogin();
+        };
+    </script>
+</body>
+</html>
