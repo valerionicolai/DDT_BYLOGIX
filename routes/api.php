@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\EntryDocumentController;
+use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\MaterialTypeController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\UserController;
@@ -85,6 +87,29 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::patch('/{id}', [MaterialTypeController::class, 'update']);
             Route::delete('/{id}', [MaterialTypeController::class, 'destroy']);
         });
+    });
+
+    // Entry Documents routes (documents management)
+    Route::prefix('documents')->group(function () {
+        Route::get('/statistics', [EntryDocumentController::class, 'statistics']);
+        Route::get('/', [EntryDocumentController::class, 'index']);
+        Route::post('/', [EntryDocumentController::class, 'store']);
+        Route::get('/{entryDocument}', [EntryDocumentController::class, 'show']);
+        Route::put('/{entryDocument}', [EntryDocumentController::class, 'update']);
+        Route::patch('/{entryDocument}', [EntryDocumentController::class, 'update']);
+        Route::delete('/{entryDocument}', [EntryDocumentController::class, 'destroy']);
+        Route::get('/{entryDocument}/materials', [EntryDocumentController::class, 'materials']);
+    });
+
+    // Materials routes (materials management)
+    Route::prefix('materials')->group(function () {
+        Route::get('/statistics', [MaterialController::class, 'statistics']);
+        Route::get('/', [MaterialController::class, 'index']);
+        Route::post('/', [MaterialController::class, 'store']);
+        Route::get('/{material}', [MaterialController::class, 'show']);
+        Route::put('/{material}', [MaterialController::class, 'update']);
+        Route::patch('/{material}', [MaterialController::class, 'update']);
+        Route::delete('/{material}', [MaterialController::class, 'destroy']);
     });
 
     // User management routes (admin only for most operations)
