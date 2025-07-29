@@ -188,7 +188,16 @@ export default {
           searchResults.value = response
           showNoResults.value = false
           scanStats.value.successful++
-          addNotification(`Trovati ${response.length} documenti per il codice ${scanResult.text}`, 'success')
+          
+          // If only one result found, redirect automatically to document detail
+          if (response.length === 1) {
+            addNotification(`Documento trovato! Reindirizzamento al dettaglio...`, 'success')
+            setTimeout(() => {
+              router.push(`/documents/${response[0].id}`)
+            }, 1500) // Small delay to show the notification
+          } else {
+            addNotification(`Trovati ${response.length} documenti per il codice ${scanResult.text}`, 'success')
+          }
         } else {
           searchResults.value = []
           showNoResults.value = true
