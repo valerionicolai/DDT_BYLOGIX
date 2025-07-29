@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test S3-B06: CSV Export Endpoint</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .result.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .endpoint-info {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .download-link {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .download-link:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test S3-B06: Endpoint CSV Export per Documenti</h1>
+        
+        <div class="endpoint-info">
+            <strong>Endpoint:</strong> GET /api/v1/documents/export/csv<br>
+            <strong>Descrizione:</strong> Esporta i documenti in formato CSV con filtri opzionali<br>
+            <strong>Autenticazione:</strong> Richiesta (Bearer Token)
+        </div>
+
+        <h2>1. Autenticazione</h2>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="admin@example.com">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" value="password">
+        </div>
+        <button onclick="login()">Login</button>
+        <div id="loginResult" class="result" style="display: none;"></div>
+
+        <h2>2. Test Endpoint CSV Export</h2>
+        
+        <h3>Filtri Opzionali</h3>
+        <div class="filters">
+            <div class="form-group">
+                <label for="documentType">Tipo Documento:</label>
+                <select id="documentType">
+                    <option value="">Tutti</option>
+                    <option value="Fattura">Fattura</option>
+                    <option value="Contratto">Contratto</option>
+                    <option value="Preventivo">Preventivo</option>
+                    <option value="Ordine di acquisto">Ordine di acquisto</option>
+                    <option value="Ricevuta">Ricevuta</option>
+                    <option value="Documento tecnico">Documento tecnico</option>
+                    <option value="Specifica">Specifica</option>
+                    <option value="Manuale">Manuale</option>
+                    <option value="Certificato">Certificato</option>
+                    <option value="Relazione">Relazione</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select id="status">
+                    <option value="">Tutti</option>
+                    <option value="draft">Draft</option>
+                    <option value="active">Active</option>
+                    <option value="archived">Archived</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="supplierName">Nome Fornitore:</label>
+                <input type="text" id="supplierName" placeholder="es. Fornitore A">
+            </div>
+            
+            <div class="form-group">
+                <label for="dateFrom">Data Da:</label>
+                <input type="date" id="dateFrom">
+            </div>
+            
+            <div class="form-group">
+                <label for="dateTo">Data A:</label>
+                <input type="date" id="dateTo">
+            </div>
+            
+            <div class="form-group">
+                <label for="search">Ricerca:</label>
+                <input type="text" id="search" placeholder="Cerca in titolo, descrizione, numero riferimento">
+            </div>
+            
+            <div class="form-group">
+                <label for="sortBy">Ordina per:</label>
+                <select id="sortBy">
+                    <option value="created_at">Data Creazione</option>
+                    <option value="title">Titolo</option>
+                    <option value="document_type">Tipo Documento</option>
+                    <option value="document_date">Data Documento</option>
+                    <option value="amount">Importo</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="sortOrder">Ordine:</label>
+                <select id="sortOrder">
+                    <option value="desc">Decrescente</option>
+                    <option value="asc">Crescente</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="exportCsv()">Esporta CSV</button>
+        <button onclick="exportCsvWithFilters()">Esporta CSV con Filtri</button>
+        <button onclick="testDocumentsList()">Lista Documenti (JSON)</button>
+        
+        <div id="exportResult" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        let authToken = '';
+        const baseUrl = 'http://127.0.0.1:8000/api';
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('loginResult');
+
+            try {
+                const response = await fetch(`${baseUrl}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    authToken = data.data.token;
+                    resultDiv.textContent = `Login effettuato con successo!\nToken: ${authToken.substring(0, 20)}...\nTipo: ${data.data.token_type}`;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = `Errore login: ${data.message || 'Errore sconosciuto'}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+            
+            resultDiv.style.display = 'block';
+        }
+
+        async function exportCsv() {
+            if (!authToken) {
+                alert('Effettua prima il login!');
+                return;
+            }
+
+            const resultDiv = document.getElementById('exportResult');
+            
+            try {
+                const response = await fetch(`${baseUrl}/documents/export/csv`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'text/csv'
+                    }
+                });
+
+                if (response.ok) {
+                    // Crea un link per il download
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `documents_export_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    resultDiv.textContent = 'CSV esportato con successo! Il download dovrebbe iniziare automaticamente.';
+                    resultDiv.className = 'result success';
+                } else {
+                    const errorData = await response.json();
+                    resultDiv.textContent = `Errore nell'esportazione: ${errorData.message || 'Errore sconosciuto'}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+            
+            resultDiv.style.display = 'block';
+        }
+
+        async function exportCsvWithFilters() {
+            if (!authToken) {
+                alert('Effettua prima il login!');
+                return;
+            }
+
+            const resultDiv = document.getElementById('exportResult');
+            
+            // Costruisci i parametri di query dai filtri
+            const params = new URLSearchParams();
+            
+            const documentType = document.getElementById('documentType').value;
+            if (documentType) params.append('document_type', documentType);
+            
+            const status = document.getElementById('status').value;
+            if (status) params.append('status', status);
+            
+            const supplierName = document.getElementById('supplierName').value;
+            if (supplierName) params.append('supplier_name', supplierName);
+            
+            const dateFrom = document.getElementById('dateFrom').value;
+            if (dateFrom) params.append('date_from', dateFrom);
+            
+            const dateTo = document.getElementById('dateTo').value;
+            if (dateTo) params.append('date_to', dateTo);
+            
+            const search = document.getElementById('search').value;
+            if (search) params.append('search', search);
+            
+            const sortBy = document.getElementById('sortBy').value;
+            if (sortBy) params.append('sort_by', sortBy);
+            
+            const sortOrder = document.getElementById('sortOrder').value;
+            if (sortOrder) params.append('sort_order', sortOrder);
+
+            const queryString = params.toString();
+            const url = `${baseUrl}/documents/export/csv${queryString ? '?' + queryString : ''}`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'text/csv'
+                    }
+                });
+
+                if (response.ok) {
+                    // Crea un link per il download
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `documents_filtered_export_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(downloadUrl);
+                    document.body.removeChild(a);
+
+                    resultDiv.textContent = `CSV con filtri esportato con successo!\nFiltri applicati: ${queryString || 'Nessun filtro'}\nIl download dovrebbe iniziare automaticamente.`;
+                    resultDiv.className = 'result success';
+                } else {
+                    const errorData = await response.json();
+                    resultDiv.textContent = `Errore nell'esportazione: ${errorData.message || 'Errore sconosciuto'}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+            
+            resultDiv.style.display = 'block';
+        }
+
+        async function testDocumentsList() {
+            if (!authToken) {
+                alert('Effettua prima il login!');
+                return;
+            }
+
+            const resultDiv = document.getElementById('exportResult');
+            
+            try {
+                const response = await fetch(`${baseUrl}/documents?per_page=5`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    let output = `Lista documenti (primi 5):\n`;
+                    output += `Totale documenti: ${data.data.total}\n`;
+                    output += `Pagina corrente: ${data.data.current_page} di ${data.data.last_page}\n\n`;
+                    
+                    data.data.data.forEach((doc, index) => {
+                        output += `${index + 1}. ${doc.title}\n`;
+                        output += `   Tipo: ${doc.document_type}\n`;
+                        output += `   Status: ${doc.status}\n`;
+                        output += `   Fornitore: ${doc.supplier_name || 'N/A'}\n`;
+                        output += `   Data: ${doc.document_date || 'N/A'}\n`;
+                        output += `   Importo: ${doc.amount ? '€' + doc.amount : 'N/A'}\n\n`;
+                    });
+                    
+                    resultDiv.textContent = output;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = `Errore nel recupero documenti: ${data.message || 'Errore sconosciuto'}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+            
+            resultDiv.style.display = 'block';
+        }
+
+        // Imposta date di default per i test
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const oneMonthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+            
+            document.getElementById('dateFrom').value = oneMonthAgo.toISOString().split('T')[0];
+            document.getElementById('dateTo').value = today.toISOString().split('T')[0];
+        });
+    </script>
+</body>
+</html>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\MaterialTypeController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\UserController;
@@ -84,6 +85,23 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/{id}', [MaterialTypeController::class, 'update']);
             Route::patch('/{id}', [MaterialTypeController::class, 'update']);
             Route::delete('/{id}', [MaterialTypeController::class, 'destroy']);
+        });
+    });
+
+    // Document routes
+    Route::prefix('documents')->group(function () {
+        // CSV export endpoint - accessible to all authenticated users
+        Route::get('/export/csv', [DocumentController::class, 'exportCsv']);
+        
+        Route::get('/', [DocumentController::class, 'index']);
+        Route::get('/{id}', [DocumentController::class, 'show']);
+        
+        // Admin-only operations
+        Route::middleware('admin')->group(function () {
+            Route::post('/', [DocumentController::class, 'store']);
+            Route::put('/{id}', [DocumentController::class, 'update']);
+            Route::patch('/{id}', [DocumentController::class, 'update']);
+            Route::delete('/{id}', [DocumentController::class, 'destroy']);
         });
     });
 
