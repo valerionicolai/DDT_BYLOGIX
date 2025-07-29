@@ -7,6 +7,7 @@ import Projects from '@/pages/Projects.vue'
 import Clients from '@/pages/Clients.vue'
 import Documents from '@/pages/Documents.vue'
 import DocumentCreate from '@/pages/DocumentCreate.vue'
+import DocumentDetail from '@/pages/DocumentDetail.vue'
 import Settings from '@/pages/Settings.vue'
 import Login from '@/pages/Login.vue'
 
@@ -68,6 +69,16 @@ const routes = [
       requiresAuth: true,
       requiresPermission: 'create.document',
       title: 'Nuovo Documento'
+    }
+  },
+  {
+    path: '/documents/:id',
+    name: 'DocumentDetail',
+    component: DocumentDetail,
+    meta: {
+      requiresAuth: true,
+      requiresPermission: 'view.document',
+      title: 'Dettaglio Documento'
     }
   },
   {

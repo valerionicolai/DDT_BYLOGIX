@@ -246,12 +246,12 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import CanAccess from '@/components/CanAccess.vue'
 import useApi from '@/composables/useApi'
-import { useNotifications } from '@/composables/useNotifications'
+import useNotifications from '@/composables/useNotifications'
 import { formatDate } from '@/utils'
 
 const router = useRouter()
 const { get, delete: deleteApi } = useApi()
-const { addNotification } = useNotifications()
+const { showNotification } = useNotifications()
 
 // State
 const loading = ref(false)

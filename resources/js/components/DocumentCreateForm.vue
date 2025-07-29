@@ -190,133 +190,269 @@
     <!-- Materials Section -->
     <div class="border-t pt-6">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-medium text-gray-900">Materiali</h3>
-        <button
-          type="button"
-          @click="addMaterial"
-          class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-        >
-          <svg class="-ml-1 mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-          </svg>
-          Aggiungi Materiale
-        </button>
+        <div>
+          <h3 class="text-lg font-medium text-gray-900">Materiali</h3>
+          <p class="text-sm text-gray-500 mt-1">
+            {{ form.materials.length }} {{ form.materials.length === 1 ? 'materiale' : 'materiali' }} 
+            {{ form.materials.length > 0 ? `- Totale: €${materialsTotalAmount.toFixed(2)}` : '' }}
+          </p>
+        </div>
+        <div class="flex space-x-2">
+          <button
+            v-if="form.materials.length > 0"
+            type="button"
+            @click="clearAllMaterials"
+            class="inline-flex items-center px-3 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          >
+            <svg class="-ml-1 mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            Rimuovi Tutti
+          </button>
+          <button
+            type="button"
+            @click="addMaterial"
+            class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          >
+            <svg class="-ml-1 mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Aggiungi Materiale
+          </button>
+        </div>
       </div>
 
-      <!-- Materials List -->
-      <div v-if="form.materials.length === 0" class="text-center py-8 text-gray-500">
+      <!-- Empty State -->
+      <div v-if="form.materials.length === 0" class="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
         </svg>
-        <p class="mt-2">Nessun materiale aggiunto</p>
-        <p class="text-sm">Clicca "Aggiungi Materiale" per iniziare</p>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">Nessun materiale aggiunto</h3>
+        <p class="mt-1 text-sm text-gray-500">Inizia aggiungendo il primo materiale al documento</p>
+        <div class="mt-6">
+          <button
+            type="button"
+            @click="addMaterial"
+            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          >
+            <svg class="-ml-1 mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Aggiungi Primo Materiale
+          </button>
+        </div>
       </div>
 
+      <!-- Materials List -->
       <div v-else class="space-y-4">
-        <div
-          v-for="(material, index) in form.materials"
-          :key="index"
-          class="border border-gray-200 rounded-lg p-4 bg-gray-50"
-        >
-          <div class="flex justify-between items-start mb-4">
-            <h4 class="text-sm font-medium text-gray-900">Materiale {{ index + 1 }}</h4>
-            <button
-              type="button"
-              @click="removeMaterial(index)"
-              class="text-red-600 hover:text-red-800"
-            >
-              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </button>
+        <TransitionGroup name="material" tag="div" class="space-y-4">
+          <div
+            v-for="(material, index) in form.materials"
+            :key="material.id || index"
+            class="border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow duration-200"
+          >
+            <!-- Material Header -->
+            <div class="flex justify-between items-center mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="flex-shrink-0">
+                  <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                    <span class="text-primary-600 font-medium text-sm">{{ index + 1 }}</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="text-sm font-medium text-gray-900">
+                    {{ material.name || `Materiale ${index + 1}` }}
+                  </h4>
+                  <p v-if="getMaterialTotal(material) > 0" class="text-xs text-gray-500">
+                    Totale riga: €{{ getMaterialTotal(material).toFixed(2) }}
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <button
+                  v-if="index > 0"
+                  type="button"
+                  @click="moveMaterialUp(index)"
+                  class="text-gray-400 hover:text-gray-600 transition-colors"
+                  title="Sposta su"
+                >
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+                <button
+                  v-if="index < form.materials.length - 1"
+                  type="button"
+                  @click="moveMaterialDown(index)"
+                  class="text-gray-400 hover:text-gray-600 transition-colors"
+                  title="Sposta giù"
+                >
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  @click="duplicateMaterial(index)"
+                  class="text-blue-600 hover:text-blue-800 transition-colors"
+                  title="Duplica"
+                >
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                    <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  @click="removeMaterial(index)"
+                  class="text-red-600 hover:text-red-800 transition-colors"
+                  title="Rimuovi"
+                >
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Material Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="lg:col-span-2">
+                <label class="block text-xs font-medium text-gray-700 mb-1">
+                  Nome Materiale *
+                  <span v-if="!material.name" class="text-red-500">Campo obbligatorio</span>
+                </label>
+                <input
+                  v-model="material.name"
+                  type="text"
+                  required
+                  class="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
+                  :class="material.name ? 'border-gray-300' : 'border-red-300 bg-red-50'"
+                  placeholder="Inserisci nome materiale"
+                  @blur="validateMaterial(material, index)"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">
+                  Quantità *
+                  <span v-if="!material.quantity || material.quantity <= 0" class="text-red-500">Richiesta</span>
+                </label>
+                <input
+                  v-model.number="material.quantity"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  required
+                  class="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
+                  :class="material.quantity > 0 ? 'border-gray-300' : 'border-red-300 bg-red-50'"
+                  placeholder="0.00"
+                  @input="calculateMaterialTotal(material)"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Unità di Misura</label>
+                <select
+                  v-model="material.unit"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="">Seleziona unità</option>
+                  <option value="kg">Chilogrammi (kg)</option>
+                  <option value="g">Grammi (g)</option>
+                  <option value="l">Litri (l)</option>
+                  <option value="ml">Millilitri (ml)</option>
+                  <option value="m">Metri (m)</option>
+                  <option value="cm">Centimetri (cm)</option>
+                  <option value="m²">Metri quadri (m²)</option>
+                  <option value="m³">Metri cubi (m³)</option>
+                  <option value="pz">Pezzi (pz)</option>
+                  <option value="conf">Confezioni (conf)</option>
+                  <option value="scatole">Scatole</option>
+                  <option value="bancali">Bancali</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Prezzo Unitario (€)</label>
+                <input
+                  v-model.number="material.unit_price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="0.00"
+                  @input="calculateMaterialTotal(material)"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Codice/Lotto</label>
+                <input
+                  v-model="material.lot_number"
+                  type="text"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="Codice identificativo"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Data Scadenza</label>
+                <input
+                  v-model="material.expiry_date"
+                  type="date"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  :min="new Date().toISOString().split('T')[0]"
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Ubicazione</label>
+                <input
+                  v-model="material.location"
+                  type="text"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="Magazzino, scaffale..."
+                >
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Note</label>
+                <input
+                  v-model="material.notes"
+                  type="text"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="Note aggiuntive"
+                >
+              </div>
+            </div>
+
+            <!-- Material Summary -->
+            <div v-if="getMaterialTotal(material) > 0" class="mt-4 p-3 bg-gray-50 rounded-md">
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-gray-600">
+                  {{ material.quantity }} {{ material.unit }} × €{{ (material.unit_price || 0).toFixed(2) }}
+                </span>
+                <span class="font-medium text-gray-900">
+                  Totale: €{{ getMaterialTotal(material).toFixed(2) }}
+                </span>
+              </div>
+            </div>
           </div>
+        </TransitionGroup>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Nome *</label>
-              <input
-                v-model="material.name"
-                type="text"
-                required
-                class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500"
-                placeholder="Nome materiale"
-              >
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Quantità *</label>
-              <input
-                v-model.number="material.quantity"
-                type="number"
-                step="0.01"
-                min="0"
-                required
-                class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500"
-                placeholder="0.00"
-              >
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Unità</label>
-              <input
-                v-model="material.unit"
-                type="text"
-                class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500"
-                placeholder="kg, pz, m, etc."
-              >
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Prezzo Unitario (€)</label>
-              <input
-                v-model.number="material.unit_price"
-                type="number"
-                step="0.01"
-                min="0"
-                class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500"
-                placeholder="0.00"
-              >
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Codice Lotto</label>
-              <input
-                v-model="material.lot_number"
-                type="text"
-                class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500"
-                placeholder="Codice lotto"
-              >
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Data Scadenza</label>
-              <input
-                v-model="material.expiry_date"
-                type="date"
-                class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500"
-              >
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Ubicazione</label>
-              <input
-                v-model="material.location"
-                type="text"
-                class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500"
-                placeholder="Magazzino, scaffale, etc."
-              >
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">Note</label>
-              <input
-                v-model="material.notes"
-                type="text"
-                class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500"
-                placeholder="Note aggiuntive"
-              >
-            </div>
-          </div>
+        <!-- Quick Add Material Button -->
+        <div class="flex justify-center pt-4">
+          <button
+            type="button"
+            @click="addMaterial"
+            class="inline-flex items-center px-4 py-2 border border-dashed border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          >
+            <svg class="-ml-1 mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Aggiungi Altro Materiale
+          </button>
         </div>
       </div>
     </div>
@@ -409,6 +545,13 @@ const isFormValid = computed(() => {
          )
 })
 
+// Computed property for materials total
+const materialsTotalAmount = computed(() => {
+  return form.value.materials.reduce((total, material) => {
+    return total + getMaterialTotal(material)
+  }, 0)
+})
+
 // Methods
 const loadClients = async () => {
   loadingClients.value = true
@@ -458,21 +601,88 @@ const calculateTotal = () => {
   form.value.total_amount = subtotal + vat
 }
 
+const calculateTotals = () => {
+  // Calculate materials total and update form totals
+  const materialsTotal = materialsTotalAmount.value
+  form.value.subtotal = materialsTotal
+  calculateTotal()
+}
+
+// Material management methods
 const addMaterial = () => {
-  form.value.materials.push({
+  const newMaterial = {
+    id: Date.now(), // Unique ID for transitions
     name: '',
-    quantity: 0,
+    quantity: 1,
     unit: '',
     unit_price: 0,
     lot_number: '',
     expiry_date: '',
     location: '',
     notes: ''
-  })
+  }
+  form.value.materials.push(newMaterial)
+  calculateTotals()
 }
 
 const removeMaterial = (index) => {
-  form.value.materials.splice(index, 1)
+  if (form.value.materials.length > 0) {
+    form.value.materials.splice(index, 1)
+    calculateTotals()
+  }
+}
+
+const clearAllMaterials = () => {
+  if (confirm('Sei sicuro di voler rimuovere tutti i materiali?')) {
+    form.value.materials = []
+    calculateTotals()
+  }
+}
+
+const duplicateMaterial = (index) => {
+  const originalMaterial = form.value.materials[index]
+  const duplicatedMaterial = {
+    ...originalMaterial,
+    id: Date.now(), // New unique ID
+    name: `${originalMaterial.name} (Copia)`
+  }
+  form.value.materials.splice(index + 1, 0, duplicatedMaterial)
+  calculateTotals()
+}
+
+const moveMaterialUp = (index) => {
+  if (index > 0) {
+    const material = form.value.materials.splice(index, 1)[0]
+    form.value.materials.splice(index - 1, 0, material)
+  }
+}
+
+const moveMaterialDown = (index) => {
+  if (index < form.value.materials.length - 1) {
+    const material = form.value.materials.splice(index, 1)[0]
+    form.value.materials.splice(index + 1, 0, material)
+  }
+}
+
+const getMaterialTotal = (material) => {
+  const quantity = parseFloat(material.quantity) || 0
+  const unitPrice = parseFloat(material.unit_price) || 0
+  return quantity * unitPrice
+}
+
+const calculateMaterialTotal = (material) => {
+  // Trigger reactivity and recalculate totals
+  calculateTotals()
+}
+
+const validateMaterial = (material, index) => {
+  // Basic validation for material fields
+  if (!material.name) {
+    console.warn(`Material ${index + 1}: Nome richiesto`)
+  }
+  if (!material.quantity || material.quantity <= 0) {
+    console.warn(`Material ${index + 1}: Quantità richiesta`)
+  }
 }
 
 const handleSubmit = () => {
@@ -499,3 +709,94 @@ onMounted(() => {
   loadProjects()
 })
 </script>
+
+<style scoped>
+/* Material transition animations */
+.material-enter-active,
+.material-leave-active {
+  transition: all 0.3s ease;
+}
+
+.material-enter-from {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+}
+
+.material-leave-to {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+}
+
+.material-move {
+  transition: transform 0.3s ease;
+}
+
+/* Hover effects for material cards */
+.material-card {
+  transition: all 0.2s ease;
+}
+
+.material-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus states for better accessibility */
+.form-input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+/* Button hover animations */
+.btn-hover {
+  transition: all 0.2s ease;
+}
+
+.btn-hover:hover {
+  transform: translateY(-1px);
+}
+
+/* Loading state for buttons */
+.btn-loading {
+  position: relative;
+  color: transparent;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .material-card {
+    margin-bottom: 1rem;
+  }
+  
+  .material-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .material-actions {
+    align-self: flex-end;
+  }
+}
+</style>

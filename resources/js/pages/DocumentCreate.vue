@@ -65,8 +65,14 @@
             </div>
             <div class="items-center px-4 py-3 space-y-2">
               <button
-                @click="createAnother"
+                @click="viewDocument"
                 class="w-full px-4 py-2 bg-primary-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                Visualizza Documento
+              </button>
+              <button
+                @click="createAnother"
+                class="w-full px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 Crea Altro Documento
               </button>
@@ -89,7 +95,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import DocumentCreateForm from '@/components/DocumentCreateForm.vue'
 import useApi from '@/composables/useApi'
-import { useNotifications } from '@/composables/useNotifications'
+import useNotifications from '@/composables/useNotifications'
 
 const router = useRouter()
 const { post } = useApi()
@@ -134,6 +140,12 @@ const goBack = () => {
 
 const goToDocuments = () => {
   router.push({ name: 'Documents' })
+}
+
+const viewDocument = () => {
+  if (createdDocument.value) {
+    router.push({ name: 'DocumentDetail', params: { id: createdDocument.value.id } })
+  }
 }
 
 const createAnother = () => {
