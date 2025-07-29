@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class EntryDocument extends Model
 {
@@ -71,6 +72,22 @@ class EntryDocument extends Model
     public function materials(): HasMany
     {
         return $this->hasMany(Material::class);
+    }
+
+    /**
+     * Get all barcodes for this document.
+     */
+    public function barcodes(): MorphMany
+    {
+        return $this->morphMany(Barcode::class, 'barcodeable');
+    }
+
+    /**
+     * Get the active barcode for this document.
+     */
+    public function activeBarcode()
+    {
+        return $this->barcodes()->active()->first();
     }
 
     /**

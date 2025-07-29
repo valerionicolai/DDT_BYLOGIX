@@ -99,6 +99,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/{entryDocument}', [EntryDocumentController::class, 'update']);
         Route::delete('/{entryDocument}', [EntryDocumentController::class, 'destroy']);
         Route::get('/{entryDocument}/materials', [EntryDocumentController::class, 'materials']);
+        
+        // Barcode routes
+        Route::get('/{entryDocument}/barcode', [EntryDocumentController::class, 'barcode']);
+        Route::post('/{entryDocument}/barcode', [EntryDocumentController::class, 'generateBarcode']);
     });
 
     // Materials routes (materials management)

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\EntryDocument;
 use App\Models\Material;
+use App\Services\BarcodeService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -59,7 +60,7 @@ class EntryDocumentController extends Controller
     /**
      * Store a newly created entry document with materials in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, BarcodeService $barcodeService): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'document_number' => 'nullable|string|unique:entry_documents',
@@ -160,6 +161,14 @@ class EntryDocumentController extends Controller
                 'total_amount' => $totalNet + $totalVat,
             ]);
 
+            // Generate barcode for the document
+            $barcode = $barcodeService->generateForModel(
+                $entryDocument,
+                'CODE128',
+                'png',
+                ['width' => 2, 'height' => 30]
+            );
+
             DB::commit();
 
             // Load relationships for response
@@ -187,7 +196,9 @@ class EntryDocumentController extends Controller
      */
     public function show(EntryDocument $entryDocument): JsonResponse
     {
-        $entryDocument->load(['project', 'user', 'materials.materialType']);
+        $entryDocument->load(['project', 'user', 'materials.materialType', 'barcodes' => function($query) {
+            $query->where('is_active', true);
+        }]);
 
         return response()->json([
             'success' => true,
@@ -318,5 +329,93 @@ class EntryDocumentController extends Controller
             'success' => true,
             'data' => $stats,
         ]);
+    }
+
+    /**
+     * Get the active barcode for a document.
+     */
+    public function barcode(EntryDocument $entryDocument, BarcodeService $barcodeService): JsonResponse
+    {
+        $activeBarcode = $entryDocument->activeBarcode();
+
+        if (!$activeBarcode) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No active barcode found for this document',
+            ], 404);
+        }
+
+        $barcodeData = [
+            'id' => $activeBarcode->id,
+            'code' => $activeBarcode->code,
+            'type' => $activeBarcode->type,
+            'format' => $activeBarcode->format,
+            'is_active' => $activeBarcode->is_active,
+            'generated_at' => $activeBarcode->generated_at,
+            'expires_at' => $activeBarcode->expires_at,
+            'image_url' => $barcodeService->getBarcodeImageUrl($activeBarcode),
+            'base64' => $barcodeService->getBarcodeAsBase64($activeBarcode),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $barcodeData,
+        ]);
+    }
+
+    /**
+     * Generate a new barcode for a document (deactivates the old one).
+     */
+    public function generateBarcode(EntryDocument $entryDocument, Request $request, BarcodeService $barcodeService): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'type' => 'nullable|string|in:CODE128,CODE39,EAN13,EAN8',
+            'format' => 'nullable|string|in:png,svg,jpg,html',
+            'width' => 'nullable|integer|min:1|max:10',
+            'height' => 'nullable|integer|min:10|max:100',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $type = $request->get('type', 'CODE128');
+            $format = $request->get('format', 'png');
+            $options = [
+                'width' => $request->get('width', 2),
+                'height' => $request->get('height', 30),
+            ];
+
+            $barcode = $barcodeService->replaceBarcode($entryDocument, $type, $format, $options);
+
+            $barcodeData = [
+                'id' => $barcode->id,
+                'code' => $barcode->code,
+                'type' => $barcode->type,
+                'format' => $barcode->format,
+                'is_active' => $barcode->is_active,
+                'generated_at' => $barcode->generated_at,
+                'expires_at' => $barcode->expires_at,
+                'image_url' => $barcodeService->getBarcodeImageUrl($barcode),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Barcode generated successfully',
+                'data' => $barcodeData,
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate barcode',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

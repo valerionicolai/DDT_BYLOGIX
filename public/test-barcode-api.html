@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Barcode API - Sprint 3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .error {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .barcode-image {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+        .barcode-image img {
+            max-width: 100%;
+            height: auto;
+        }
+        input, select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Barcode API - Sprint 3</h1>
+    
+    <div class="container">
+        <h2>Barcode Integration Tests</h2>
+        <p>Test dell'integrazione dei barcode con i documenti di entrata</p>
+    </div>
+
+    <!-- Test 1: Create Document with Barcode -->
+    <div class="test-section">
+        <h3>Test 1: Creazione Documento con Barcode Automatico</h3>
+        <p>Crea un nuovo documento e verifica che venga generato automaticamente un barcode</p>
+        <button onclick="createDocumentWithBarcode()">Crea Documento</button>
+        <div id="result1" class="result"></div>
+    </div>
+
+    <!-- Test 2: Get Document Barcode -->
+    <div class="test-section">
+        <h3>Test 2: Recupera Barcode di un Documento</h3>
+        <div class="form-group">
+            <label>Document ID:</label>
+            <input type="number" id="documentId" placeholder="ID del documento" value="1">
+            <button onclick="getDocumentBarcode()">Ottieni Barcode</button>
+        </div>
+        <div id="result2" class="result"></div>
+        <div id="barcodeDisplay" class="barcode-image"></div>
+    </div>
+
+    <!-- Test 3: Generate New Barcode -->
+    <div class="test-section">
+        <h3>Test 3: Genera Nuovo Barcode</h3>
+        <div class="form-group">
+            <label>Document ID:</label>
+            <input type="number" id="newBarcodeDocId" placeholder="ID del documento" value="1">
+        </div>
+        <div class="form-group">
+            <label>Tipo:</label>
+            <select id="barcodeType">
+                <option value="CODE128">CODE128</option>
+                <option value="CODE39">CODE39</option>
+                <option value="EAN13">EAN13</option>
+                <option value="EAN8">EAN8</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Formato:</label>
+            <select id="barcodeFormat">
+                <option value="png">PNG</option>
+                <option value="svg">SVG</option>
+                <option value="jpg">JPG</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Larghezza:</label>
+            <input type="number" id="barcodeWidth" value="2" min="1" max="10">
+        </div>
+        <div class="form-group">
+            <label>Altezza:</label>
+            <input type="number" id="barcodeHeight" value="30" min="10" max="100">
+        </div>
+        <button onclick="generateNewBarcode()">Genera Nuovo Barcode</button>
+        <div id="result3" class="result"></div>
+        <div id="newBarcodeDisplay" class="barcode-image"></div>
+    </div>
+
+    <!-- Test 4: List Documents with Barcodes -->
+    <div class="test-section">
+        <h3>Test 4: Lista Documenti con Barcode</h3>
+        <p>Recupera la lista dei documenti e verifica la presenza dei barcode</p>
+        <button onclick="listDocumentsWithBarcodes()">Lista Documenti</button>
+        <div id="result4" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+        let authToken = null;
+
+        // Funzione per effettuare login automatico
+        async function autoLogin() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@dttbylogix.com',
+                        password: 'password123'
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    authToken = data.data.token;
+                    console.log('Login automatico effettuato');
+                } else {
+                    console.error('Errore nel login automatico:', data.message);
+                }
+            } catch (error) {
+                console.error('Errore nel login automatico:', error);
+            }
+        }
+
+        // Funzione helper per le chiamate API
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+
+            if (authToken) {
+                headers['Authorization'] = `Bearer ${authToken}`;
+            }
+
+            const config = {
+                method,
+                headers,
+            };
+
+            if (body) {
+                config.body = JSON.stringify(body);
+            }
+
+            return fetch(`${API_BASE}${endpoint}`, config);
+        }
+
+        // Test 1: Crea documento con barcode automatico
+        async function createDocumentWithBarcode() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.textContent = 'Creazione documento in corso...';
+            resultDiv.className = 'result';
+
+            try {
+                const documentData = {
+                    document_type: 'entry',
+                    supplier_name: 'Test Supplier Barcode',
+                    document_date: new Date().toISOString().split('T')[0],
+                    status: 'draft',
+                    materials: [
+                        {
+                            material_type_id: 1,
+                            description: 'Test Material for Barcode',
+                            quantity: 10,
+                            unit_of_measure: 'pz',
+                            unit_price: 15.50,
+                            vat_rate: 22
+                        }
+                    ]
+                };
+
+                const response = await apiCall('/documents', 'POST', documentData);
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.textContent = `✅ Documento creato con successo!\n\nID: ${data.data.id}\nNumero: ${data.data.document_number}\n\nRisposta completa:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.className = 'result success';
+                    
+                    // Aggiorna automaticamente l'ID nei test successivi
+                    document.getElementById('documentId').value = data.data.id;
+                    document.getElementById('newBarcodeDocId').value = data.data.id;
+                } else {
+                    resultDiv.textContent = `❌ Errore nella creazione:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Test 2: Ottieni barcode del documento
+        async function getDocumentBarcode() {
+            const documentId = document.getElementById('documentId').value;
+            const resultDiv = document.getElementById('result2');
+            const barcodeDiv = document.getElementById('barcodeDisplay');
+            
+            resultDiv.textContent = 'Recupero barcode in corso...';
+            resultDiv.className = 'result';
+            barcodeDiv.innerHTML = '';
+
+            try {
+                const response = await apiCall(`/documents/${documentId}/barcode`);
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.textContent = `✅ Barcode recuperato con successo!\n\nCodice: ${data.data.code}\nTipo: ${data.data.type}\nFormato: ${data.data.format}\n\nRisposta completa:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.className = 'result success';
+                    
+                    // Mostra l'immagine del barcode
+                    if (data.data.image_url) {
+                        barcodeDiv.innerHTML = `
+                            <h4>Immagine Barcode:</h4>
+                            <img src="${data.data.image_url}" alt="Barcode ${data.data.code}" />
+                            <p>URL: ${data.data.image_url}</p>
+                        `;
+                    }
+                } else {
+                    resultDiv.textContent = `❌ Errore nel recupero:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Test 3: Genera nuovo barcode
+        async function generateNewBarcode() {
+            const documentId = document.getElementById('newBarcodeDocId').value;
+            const type = document.getElementById('barcodeType').value;
+            const format = document.getElementById('barcodeFormat').value;
+            const width = document.getElementById('barcodeWidth').value;
+            const height = document.getElementById('barcodeHeight').value;
+            
+            const resultDiv = document.getElementById('result3');
+            const barcodeDiv = document.getElementById('newBarcodeDisplay');
+            
+            resultDiv.textContent = 'Generazione nuovo barcode in corso...';
+            resultDiv.className = 'result';
+            barcodeDiv.innerHTML = '';
+
+            try {
+                const barcodeData = {
+                    type,
+                    format,
+                    width: parseInt(width),
+                    height: parseInt(height)
+                };
+
+                const response = await apiCall(`/documents/${documentId}/barcode`, 'POST', barcodeData);
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.textContent = `✅ Nuovo barcode generato con successo!\n\nCodice: ${data.data.code}\nTipo: ${data.data.type}\nFormato: ${data.data.format}\n\nRisposta completa:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.className = 'result success';
+                    
+                    // Mostra l'immagine del nuovo barcode
+                    if (data.data.image_url) {
+                        barcodeDiv.innerHTML = `
+                            <h4>Nuovo Barcode:</h4>
+                            <img src="${data.data.image_url}" alt="Barcode ${data.data.code}" />
+                            <p>URL: ${data.data.image_url}</p>
+                        `;
+                    }
+                } else {
+                    resultDiv.textContent = `❌ Errore nella generazione:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Test 4: Lista documenti con barcode
+        async function listDocumentsWithBarcodes() {
+            const resultDiv = document.getElementById('result4');
+            resultDiv.textContent = 'Recupero lista documenti...';
+            resultDiv.className = 'result';
+
+            try {
+                const response = await apiCall('/documents?per_page=5');
+                const data = await response.json();
+
+                if (data.success) {
+                    let output = `✅ Lista documenti recuperata con successo!\n\nTotale documenti: ${data.data.total}\n\n`;
+                    
+                    data.data.data.forEach((doc, index) => {
+                        output += `Documento ${index + 1}:\n`;
+                        output += `  ID: ${doc.id}\n`;
+                        output += `  Numero: ${doc.document_number}\n`;
+                        output += `  Fornitore: ${doc.supplier_name}\n`;
+                        output += `  Barcode: ${doc.barcodes && doc.barcodes.length > 0 ? 'Presente' : 'Non presente'}\n`;
+                        if (doc.barcodes && doc.barcodes.length > 0) {
+                            output += `    Codice: ${doc.barcodes[0].code}\n`;
+                            output += `    Tipo: ${doc.barcodes[0].type}\n`;
+                        }
+                        output += '\n';
+                    });
+                    
+                    output += `\nRisposta completa:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.textContent = output;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = `❌ Errore nel recupero:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Errore di rete: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Effettua login automatico al caricamento della pagina
+        window.onload = function() {
+            autoLogin();
+        };
+    </script>
+</body>
+</html>
