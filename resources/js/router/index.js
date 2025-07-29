@@ -9,6 +9,7 @@ import Clients from '@/pages/Clients.vue'
 import Documents from '@/pages/Documents.vue'
 import DocumentCreate from '@/pages/DocumentCreate.vue'
 import DocumentDetail from '@/pages/DocumentDetail.vue'
+import MaterialTypes from '@/pages/MaterialTypes.vue'
 import Settings from '@/pages/Settings.vue'
 import Login from '@/pages/Login.vue'
 
@@ -90,6 +91,16 @@ const routes = [
       requiresAuth: true,
       requiresPermission: 'view.document',
       title: 'Dettaglio Documento'
+    }
+  },
+  {
+    path: '/material-types',
+    name: 'MaterialTypes',
+    component: MaterialTypes,
+    meta: {
+      requiresAuth: true,
+      requiresPermission: 'view.material-types',
+      title: 'Gestione Materiali'
     }
   },
   {
