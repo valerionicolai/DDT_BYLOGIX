@@ -7,6 +7,7 @@ import Projects from '@/pages/Projects.vue'
 import Clients from '@/pages/Clients.vue'
 import Documents from '@/pages/Documents.vue'
 import DocumentDetail from '@/pages/DocumentDetail.vue'
+import BarcodeScannerPage from '@/pages/BarcodeScannerPage.vue'
 import Settings from '@/pages/Settings.vue'
 import Login from '@/pages/Login.vue'
 
@@ -66,6 +67,16 @@ const routes = [
     component: DocumentDetail,
     meta: {
       title: 'Dettaglio Documento - DTT by Logix',
+      requiresAuth: true,
+      requiresPermission: 'view.documents'
+    }
+  },
+  {
+    path: '/scanner',
+    name: 'BarcodeScanner',
+    component: BarcodeScannerPage,
+    meta: {
+      title: 'Scanner Codici a Barre - DTT by Logix',
       requiresAuth: true,
       requiresPermission: 'view.documents'
     }
