@@ -21,16 +21,21 @@
         </div>
       </div>
     </footer>
+
+    <!-- Notification Container -->
+    <NotificationContainer />
   </div>
 </template>
 
 <script>
-import AppNavigation from './AppNavigation.vue'
+import AppNavigation from '@/components/AppNavigation.vue'
+import NotificationContainer from '@/components/NotificationContainer.vue'
 
 export default {
   name: 'MainLayout',
   components: {
-    AppNavigation
+    AppNavigation,
+    NotificationContainer
   }
 }
 </script>

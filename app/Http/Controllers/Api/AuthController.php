@@ -34,6 +34,30 @@ class AuthController extends Controller
             ]);
         }
 
+        // Per le richieste stateful, usa l'autenticazione web
+        if ($this->isStatefulRequest($request)) {
+            Auth::guard('web')->login($user, $request->boolean('remember'));
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Login effettuato con successo',
+                'data' => [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'role' => $user->role,
+                        'email_verified_at' => $user->email_verified_at,
+                        'created_at' => $user->created_at,
+                        'updated_at' => $user->updated_at,
+                    ],
+                    'token' => null, // Per le sessioni stateful non serve il token
+                    'token_type' => 'Session',
+                ]
+            ], 200);
+        }
+
+        // Per le richieste non stateful, usa i token API
         // Revoca tutti i token esistenti per questo utente
         $user->tokens()->delete();
 
@@ -48,6 +72,7 @@ class AuthController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'role' => $user->role,
                     'email_verified_at' => $user->email_verified_at,
                     'created_at' => $user->created_at,
                     'updated_at' => $user->updated_at,
@@ -59,19 +84,33 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout user (revoke token)
+     * Logout user (Revoke the token)
      *
      * @param Request $request
      * @return JsonResponse
      */
     public function logout(Request $request): JsonResponse
     {
-        // Revoca il token corrente
-        $request->user()->currentAccessToken()->delete();
+        // Per le richieste stateful, usa il logout della sessione web
+        if ($this->isStatefulRequest($request)) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Logout effettuato con successo'
+            ], 200);
+        }
+
+        // Per le richieste con token, revoca il token corrente
+        if ($request->user() && $request->user()->currentAccessToken()) {
+            $request->user()->currentAccessToken()->delete();
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'Logout effettuato con successo',
+            'message' => 'Logout effettuato con successo'
         ], 200);
     }
 
@@ -144,28 +183,77 @@ class AuthController extends Controller
     }
 
     /**
-     * Refresh user token
+     * Refresh token
      *
      * @param Request $request
      * @return JsonResponse
      */
-    public function refresh(Request $request): JsonResponse
+    public function refreshToken(Request $request): JsonResponse
     {
         $user = $request->user();
-        
-        // Revoca il token corrente
-        $request->user()->currentAccessToken()->delete();
-        
-        // Crea un nuovo token
+
+        // Per le richieste stateful, non è necessario rinfrescare il token
+        if ($this->isStatefulRequest($request)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Sessione ancora valida',
+                'data' => [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'role' => $user->role,
+                        'email_verified_at' => $user->email_verified_at,
+                        'created_at' => $user->created_at,
+                        'updated_at' => $user->updated_at,
+                    ],
+                    'token' => null,
+                    'token_type' => 'Session',
+                ]
+            ], 200);
+        }
+
+        // Per le richieste con token, crea un nuovo token
+        if ($user->currentAccessToken()) {
+            $user->currentAccessToken()->delete();
+        }
+
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'message' => 'Token aggiornato con successo',
             'data' => [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'email_verified_at' => $user->email_verified_at,
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at,
+                ],
                 'token' => $token,
                 'token_type' => 'Bearer',
             ]
         ], 200);
+    }
+
+    /**
+     * Determina se la richiesta proviene da un dominio stateful
+     */
+    protected function isStatefulRequest(Request $request): bool
+    {
+        $statefulDomains = config('sanctum.stateful', []);
+        
+        foreach ($statefulDomains as $domain) {
+            if ($request->getHost() === $domain || 
+                $request->getHttpHost() === $domain ||
+                str_contains($request->getHttpHost(), $domain)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

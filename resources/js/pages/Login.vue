@@ -130,7 +130,7 @@
       <div class="mt-6 p-4 bg-blue-50 rounded-md">
         <h3 class="text-sm font-medium text-blue-800 mb-2">Credenziali di test:</h3>
         <div class="text-xs text-blue-700 space-y-1">
-          <p><strong>Admin:</strong> admin@example.com / password</p>
+          <p><strong>Admin:</strong> admin@dttbylogix.com / password</p>
           <p><strong>User:</strong> user@example.com / password</p>
         </div>
         <div class="mt-2 flex space-x-2">
@@ -221,8 +221,8 @@ const handleLogin = async () => {
 
 // Demo credentials helpers
 const fillAdminCredentials = () => {
-  form.email = 'admin@example.com'
-  form.password = 'password'
+  form.email = 'admin@dttbylogix.com'
+  form.password = 'password123'
   clearErrors()
 }
 

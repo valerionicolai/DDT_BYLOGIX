@@ -29,23 +29,32 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
     
     try {
-      // Prima ottieni il token CSRF
+      // Prima ottieni il token CSRF per le richieste stateful
       await axios.get('/sanctum/csrf-cookie')
       
       // Poi effettua il login
       const response = await axios.post('/api/auth/login', credentials)
       
       if (response.data.success) {
-        token.value = response.data.data.token
         user.value = response.data.data.user
         
-        // Salva il token nel localStorage se "remember" è true
-        if (credentials.remember) {
-          localStorage.setItem('auth_token', token.value)
+        // Gestisci il token in base al tipo di autenticazione
+        if (response.data.data.token_type === 'Session') {
+          // Per le sessioni stateful, non memorizzare il token
+          token.value = null
+          localStorage.removeItem('auth_token')
+          delete axios.defaults.headers.common['Authorization']
+        } else {
+          // Per l'autenticazione con token
+          token.value = response.data.data.token
+          
+          if (credentials.remember) {
+            localStorage.setItem('auth_token', token.value)
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
+          } else {
+            localStorage.removeItem('auth_token')
+          }
         }
-        
-        // Configura il token per le richieste future
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
         
         // Avvia il monitoraggio della sessione
         startSessionMonitoring()
@@ -68,16 +77,19 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     
     try {
-      if (token.value) {
+      if (token.value || isAuthenticated.value) {
+        // Per le sessioni stateful, chiama sempre logout anche senza token
         await axios.post('/api/auth/logout')
       }
     } catch (err) {
       console.error('Logout error:', err)
+      // Non bloccare il logout locale anche se il server fallisce
     } finally {
       // Pulisci sempre i dati locali
       user.value = null
       token.value = null
       localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_remember')
       delete axios.defaults.headers.common['Authorization']
       
       // Ferma il monitoraggio della sessione
@@ -91,19 +103,35 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const fetchUser = async () => {
-    if (!token.value) return null
-    
+    // Per le sessioni stateful, prova sempre a recuperare l'utente
+    // anche senza token nel localStorage
     loading.value = true
     
     try {
       const response = await axios.get('/api/auth/user')
-      user.value = response.data.data || response.data
-      updateLastActivity()
-      return user.value
+      
+      if (response.data.success) {
+        user.value = response.data.data.user
+        updateLastActivity()
+        
+        // Se non abbiamo un token ma l'utente è autenticato via sessione,
+        // avvia comunque il monitoraggio
+        if (!sessionTimeout.value) {
+          startSessionMonitoring()
+        }
+        
+        return response.data
+      }
     } catch (err) {
       console.error('Fetch user error:', err)
-      // Se il token non è valido, effettua il logout
-      await logout('invalid_token')
+      // Se il token non è valido o la sessione è scaduta, effettua il logout
+      if (err.response?.status === 401) {
+        user.value = null
+        token.value = null
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('auth_remember')
+        delete axios.defaults.headers.common['Authorization']
+      }
       throw err
     } finally {
       loading.value = false
@@ -154,9 +182,21 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await axios.post('/api/auth/refresh')
       
       if (response.data.success) {
-        token.value = response.data.data.token
-        localStorage.setItem('auth_token', token.value)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
+        user.value = response.data.data.user
+        
+        // Gestisci il token in base al tipo di autenticazione
+        if (response.data.data.token_type === 'Session') {
+          // Per le sessioni stateful, non aggiornare il token
+          token.value = null
+          localStorage.removeItem('auth_token')
+          delete axios.defaults.headers.common['Authorization']
+        } else {
+          // Per l'autenticazione con token
+          token.value = response.data.data.token
+          localStorage.setItem('auth_token', token.value)
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
+        }
+        
         updateLastActivity()
         return true
       }
@@ -234,7 +274,7 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
   }
 
-  // Inizializza l'header Authorization se il token esiste
+  // Inizializza l'header Authorization solo se il token esiste e remember è attivo
   if (token.value) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
     
@@ -242,6 +282,30 @@ export const useAuthStore = defineStore('auth', () => {
     if (user.value) {
       startSessionMonitoring()
     }
+  }
+
+  // Inizializzazione dell'autenticazione
+  const initializeAuth = async () => {
+    const savedToken = localStorage.getItem('auth_token');
+    const savedRemember = localStorage.getItem('auth_remember') === 'true';
+    
+    if (savedToken && savedRemember) {
+      token.value = savedToken;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`;
+    }
+    
+    // Prova sempre a recuperare i dati utente per le sessioni stateful
+    try {
+      await fetchUser()
+    } catch (err) {
+      // Se fallisce, l'utente non è autenticato
+      console.debug('No active session found')
+    }
+  }
+
+  // Inizializza l'autenticazione all'avvio
+  if (!user.value) {
+    initializeAuth()
   }
 
   // Intercetta le richieste per aggiornare l'ultima attività
