@@ -192,8 +192,8 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useApi } from '@/composables/useApi'
-import { useNotifications } from '@/composables/useNotifications'
+import useApi from '@/composables/useApi'
+import useNotifications from '@/composables/useNotifications'
 
 // Props
 const props = defineProps({

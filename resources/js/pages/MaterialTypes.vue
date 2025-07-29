@@ -1,13 +1,13 @@
 <template>
   <MainLayout>
-    <div class="space-y-6">
-      <!-- Header -->
-      <div class="bg-white shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="space-y-6">
+        <!-- Page Header -->
+        <div class="mb-8">
           <div class="flex justify-between items-center">
             <div>
-              <h1 class="text-2xl font-bold text-gray-900">Gestione Materiali</h1>
-              <p class="mt-1 text-sm text-gray-600">
+              <h1 class="text-3xl font-bold text-gray-900">Gestione Materiali</h1>
+              <p class="mt-2 text-gray-600">
                 Gestisci i tipi di materiali e visualizza l'inventario
               </p>
             </div>
@@ -27,56 +27,60 @@
           </div>
         </div>
 
-        <!-- Filters -->
-        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Cerca</label>
-              <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Nome, descrizione..."
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-              <select
-                v-model="categoryFilter"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="">Tutte le categorie</option>
-                <option v-for="category in categories" :key="category" :value="category">
-                  {{ category }}
-                </option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Stato</label>
-              <select
-                v-model="statusFilter"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="">Tutti gli stati</option>
-                <option value="active">Attivo</option>
-                <option value="inactive">Inattivo</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Ordina per</label>
-              <select
-                v-model="sortBy"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="name">Nome</option>
-                <option value="category">Categoria</option>
-                <option value="unit_price">Prezzo</option>
-                <option value="created_at">Data creazione</option>
-              </select>
+        <!-- Filters Card -->
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Filtri di Ricerca</h3>
+          </div>
+          <div class="px-6 py-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cerca</label>
+                <input
+                  v-model="searchQuery"
+                  type="text"
+                  placeholder="Nome, descrizione..."
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+                <select
+                  v-model="categoryFilter"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                >
+                  <option value="">Tutte le categorie</option>
+                  <option v-for="category in categories" :key="category" :value="category">
+                    {{ category }}
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Stato</label>
+                <select
+                  v-model="statusFilter"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                >
+                  <option value="">Tutti gli stati</option>
+                  <option value="active">Attivo</option>
+                  <option value="inactive">Inattivo</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ordina per</label>
+                <select
+                  v-model="sortBy"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                >
+                  <option value="name">Nome</option>
+                  <option value="category">Categoria</option>
+                  <option value="unit_price">Prezzo</option>
+                  <option value="created_at">Data creazione</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
       <!-- Material Types Table -->
       <div class="bg-white shadow rounded-lg overflow-hidden">
@@ -277,6 +281,7 @@
           </div>
         </div>
       </div>
+      </div>
     </div>
 
     <!-- Material Type Modal -->
@@ -307,8 +312,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useApi } from '@/composables/useApi'
-import { useNotifications } from '@/composables/useNotifications'
+import useApi from '@/composables/useApi'
+import useNotifications from '@/composables/useNotifications'
 import MainLayout from '@/components/MainLayout.vue'
 import CanAccess from '@/components/CanAccess.vue'
 import MaterialTypeModal from '@/components/MaterialTypeModal.vue'
