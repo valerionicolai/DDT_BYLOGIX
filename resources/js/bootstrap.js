@@ -5,8 +5,8 @@ window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.defaults.withCredentials = true;
 
-// Configurazione base URL per le API
+// Configurazione base URL per le API - usa l'origine corrente
 window.axios.defaults.baseURL = window.location.origin;
 
-// Configurazione per CSRF token
-window.axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+// Per Laravel Sanctum, il CSRF token viene gestito automaticamente tramite cookie
+// dopo aver chiamato /sanctum/csrf-cookie, non tramite meta tag
