@@ -240,6 +240,17 @@
           </router-link>
         </CanAccess>
 
+        <CanAccess permission="view.material-types">
+          <router-link
+            to="/material-types"
+            class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50 hover:border-gray-300"
+            active-class="border-primary-500 text-primary-700 bg-primary-50"
+            @click="showMobileMenu = false"
+          >
+            Materiali
+          </router-link>
+        </CanAccess>
+
         <CanAccess requires-admin>
           <div class="border-t border-gray-200 pt-2">
             <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">

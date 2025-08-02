@@ -5,6 +5,7 @@ import { applyRouteMiddleware } from './middleware'
 import Dashboard from '@/pages/Dashboard.vue'
 import Projects from '@/pages/Projects.vue'
 import Clients from '@/pages/Clients.vue'
+import MaterialTypes from '@/pages/MaterialTypes.vue'
 import Settings from '@/pages/Settings.vue'
 import Login from '@/pages/Login.vue'
 
@@ -46,6 +47,16 @@ const routes = [
       title: 'Clienti - DTT by Logix',
       requiresAuth: true,
       requiresPermission: 'view.clients'
+    }
+  },
+  {
+    path: '/material-types',
+    name: 'MaterialTypes',
+    component: MaterialTypes,
+    meta: {
+      title: 'Tipi di Materiale - DTT by Logix',
+      requiresAuth: true,
+      requiresPermission: 'view.material-types'
     }
   },
   {
