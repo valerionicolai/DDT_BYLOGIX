@@ -6,6 +6,7 @@ use Filament\Pages\Page;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Widgets\StatsOverviewWidget;
 use App\Filament\Widgets\StatsOverview;
+use App\Filament\Widgets\DetailedStatsWidget;
 use App\Filament\Widgets\ProjectsChart;
 use App\Filament\Widgets\RecentActivity;
 use App\Filament\Widgets\QuickActions;
@@ -24,6 +25,7 @@ class Dashboard extends BaseDashboard
     {
         return [
             StatsOverview::class,
+            DetailedStatsWidget::class,
             ProjectsChart::class,
             RecentActivity::class,
             QuickActions::class,

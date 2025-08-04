@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use Filament\Widgets\Widget;
 use Filament\Actions\Action;
 use Filament\Support\Enums\ActionSize;
+use Illuminate\Support\Facades\Auth;
 
 class QuickActions extends Widget
 {
@@ -64,7 +65,7 @@ class QuickActions extends Widget
                 ->size(ActionSize::Large)
                 ->url(route('filament.admin.pages.settings'))
                 ->tooltip('System settings')
-                ->visible(fn () => auth()->user()?->hasRole('super_admin') ?? false),
+                ->visible(fn () => Auth::user()?->hasRole('super_admin') ?? false),
         ];
     }
 

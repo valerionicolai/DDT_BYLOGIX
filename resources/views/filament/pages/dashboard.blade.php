@@ -51,6 +51,11 @@
             @livewire(\App\Filament\Widgets\StatsOverview::class)
         </div>
 
+        {{-- Detailed Statistics --}}
+        <div class="mt-6">
+            @livewire(\App\Filament\Widgets\DetailedStatsWidget::class)
+        </div>
+
         {{-- Main Content Grid --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {{-- Projects Chart --}}
@@ -151,6 +156,9 @@
             </div>
         </div>
     </div>
+
+    {{-- Stats Notifications Component --}}
+    @livewire(\App\Livewire\StatsNotifications::class)
 
     {{-- Alpine.js for enhanced interactivity --}}
     <script>
