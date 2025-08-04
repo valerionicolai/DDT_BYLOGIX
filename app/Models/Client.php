@@ -44,6 +44,14 @@ class Client extends Model
     {
         return $this->hasMany(Project::class);
     }
+    
+    /**
+     * Get the documents supplied by this client.
+     */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
 
     /**
      * Scope a query to only include active clients.

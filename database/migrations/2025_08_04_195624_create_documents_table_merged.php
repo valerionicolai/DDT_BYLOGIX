@@ -15,28 +15,29 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->string('category', 100);
-            $table->string('supplier')->nullable();
-            $table->string('file_path')->nullable();
-            $table->string('file_name')->nullable();
-            $table->bigInteger('file_size')->nullable(); // in bytes
-            $table->string('file_type')->nullable();
-            $table->enum('status', ['draft', 'active', 'archived'])->default('draft');
+            $table->string('file_path');
             $table->string('barcode')->unique()->nullable();
-            $table->json('metadata')->nullable();
             $table->timestamp('created_date')->nullable();
             $table->timestamp('due_date')->nullable();
+            $table->enum('status', ['draft', 'active', 'archived'])->default('draft');
+            $table->json('metadata')->nullable();
+            
+            // Foreign key relationships
+            $table->foreignId('document_type_id')->nullable()->constrained('document_types')->onDelete('set null');
+            $table->foreignId('document_category_id')->nullable()->constrained('document_categories')->onDelete('set null');
+            $table->foreignId('client_id')->nullable()->constrained('clients')->onDelete('set null');
+            
             $table->timestamps();
             $table->softDeletes();
-
+            
             // Indexes for better performance
+            $table->index(['title']);
             $table->index(['status']);
-            $table->index(['category']);
-            $table->index(['supplier']);
-            $table->index(['barcode']);
             $table->index(['created_date']);
             $table->index(['due_date']);
-            $table->index(['created_at']);
+            $table->index(['document_type_id']);
+            $table->index(['document_category_id']);
+            $table->index(['client_id']);
         });
     }
 
