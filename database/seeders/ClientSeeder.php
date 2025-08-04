@@ -101,7 +101,10 @@ class ClientSeeder extends Seeder
         ];
 
         foreach ($clients as $client) {
-            Client::create($client);
+            Client::firstOrCreate(
+                ['email' => $client['email']], // Find by email
+                $client // Create with all data if not found
+            );
         }
     }
 }

@@ -67,17 +67,17 @@ class RolePermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Create roles and assign permissions
         
         // Super Admin role - has all permissions
-        $superAdminRole = Role::create(['name' => 'super_admin']);
-        $superAdminRole->givePermissionTo(Permission::all());
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin']);
+        $superAdminRole->syncPermissions(Permission::all());
 
         // Admin role - has most permissions except system management
-        $adminRole = Role::create(['name' => 'admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $adminPermissions = [
             'access_admin_panel',
             'view_users', 'create_users', 'edit_users',
@@ -87,10 +87,10 @@ class RolePermissionSeeder extends Seeder
             'view_documents', 'create_documents', 'edit_documents', 'delete_documents', 'upload_documents',
             'view_dashboard', 'view_analytics', 'export_data',
         ];
-        $adminRole->givePermissionTo($adminPermissions);
+        $adminRole->syncPermissions($adminPermissions);
 
         // Manager role - can manage projects, clients, and materials
-        $managerRole = Role::create(['name' => 'manager']);
+        $managerRole = Role::firstOrCreate(['name' => 'manager']);
         $managerPermissions = [
             'access_admin_panel',
             'view_users',
@@ -100,10 +100,10 @@ class RolePermissionSeeder extends Seeder
             'view_documents', 'create_documents', 'edit_documents', 'upload_documents',
             'view_dashboard', 'view_analytics',
         ];
-        $managerRole->givePermissionTo($managerPermissions);
+        $managerRole->syncPermissions($managerPermissions);
 
         // User role - basic access
-        $userRole = Role::create(['name' => 'user']);
+        $userRole = Role::firstOrCreate(['name' => 'user']);
         $userPermissions = [
             'view_projects',
             'view_clients',
@@ -111,7 +111,7 @@ class RolePermissionSeeder extends Seeder
             'view_documents',
             'view_dashboard',
         ];
-        $userRole->givePermissionTo($userPermissions);
+        $userRole->syncPermissions($userPermissions);
 
         // Assign roles to existing users based on their current role field
         $users = User::all();

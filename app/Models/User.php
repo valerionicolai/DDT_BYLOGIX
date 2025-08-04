@@ -27,6 +27,7 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'role',
+        'is_active',
     ];
 
     /**
@@ -50,6 +51,7 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => 'string',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -66,7 +68,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->hasRoleColumn('admin');
     }
 
     /**
@@ -74,21 +76,21 @@ class User extends Authenticatable implements FilamentUser
      */
     public function isUser(): bool
     {
-        return $this->role === 'user';
+        return $this->hasRoleColumn('user');
     }
 
     /**
-     * Check if the user has a specific role.
+     * Check if the user has a specific role (using role column).
      */
-    public function hasRole(string $role): bool
+    public function hasRoleColumn(string $role): bool
     {
         return $this->role === $role;
     }
 
     /**
-     * Check if the user has any of the given roles.
+     * Check if the user has any of the given roles (using role column).
      */
-    public function hasAnyRole(array $roles): bool
+    public function hasAnyRoleColumn(array $roles): bool
     {
         return in_array($this->role, $roles);
     }
@@ -127,7 +129,7 @@ class User extends Authenticatable implements FilamentUser
         
         // Allow access to admin panel for users with admin role or admin permission
         if ($panelId === 'admin' || $panelId === null) {
-            return $this->hasRole('admin') || $this->can('access_admin_panel');
+            return $this->hasRoleColumn('admin') || $this->can('access_admin_panel');
         }
 
         return true;
@@ -138,7 +140,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function canAccessAdminPanel(): bool
     {
-        return $this->hasRole('admin') || $this->can('access_admin_panel');
+        return $this->hasRoleColumn('admin') || $this->can('access_admin_panel');
     }
 
     /**
