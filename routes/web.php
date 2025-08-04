@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Livewire\TestComponent;
+
+// Test route for Livewire component
+Route::get('/livewire-test', TestComponent::class)->name('livewire.test');
 
 // Rotta principale per l'applicazione Vue.js
 Route::get('/', function () {
