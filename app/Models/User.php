@@ -8,11 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -112,5 +115,45 @@ class User extends Authenticatable
     public function scopeUsers($query)
     {
         return $query->where('role', 'user');
+    }
+
+    /**
+     * Determine if the user can access the given Filament panel.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // Get panel ID safely
+        $panelId = $panel->getId();
+        
+        // Allow access to admin panel for users with admin role or admin permission
+        if ($panelId === 'admin' || $panelId === null) {
+            return $this->hasRole('admin') || $this->can('access_admin_panel');
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if user can access admin panel.
+     */
+    public function canAccessAdminPanel(): bool
+    {
+        return $this->hasRole('admin') || $this->can('access_admin_panel');
+    }
+
+    /**
+     * Get user's display name for Filament.
+     */
+    public function getFilamentName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get user's avatar URL for Filament.
+     */
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return null; // Can be implemented later with avatar upload
     }
 }
