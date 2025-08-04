@@ -47,10 +47,49 @@
         </div>
     </div>
     
+    <!-- Tailwind CSS Plugins Test -->
+    <div class="border-t pt-4 mt-4">
+        <h3 class="text-lg font-semibold text-indigo-600 mb-3">Tailwind CSS Plugins Test</h3>
+        
+        <!-- @tailwindcss/forms plugin test -->
+        <div class="mb-4">
+            <h4 class="text-md font-medium text-gray-700 mb-2">Forms Plugin Test</h4>
+            <div class="space-y-2">
+                <input type="text" placeholder="Text input with forms plugin styling" 
+                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                
+                <select class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option>Select option with forms plugin</option>
+                    <option>Option 1</option>
+                    <option>Option 2</option>
+                </select>
+                
+                <textarea placeholder="Textarea with forms plugin styling" rows="2"
+                          class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+            </div>
+        </div>
+        
+        <!-- @tailwindcss/typography plugin test -->
+        <div class="mb-4">
+            <h4 class="text-md font-medium text-gray-700 mb-2">Typography Plugin Test</h4>
+            <div class="prose prose-sm max-w-none">
+                <p>This paragraph uses the <strong>@tailwindcss/typography</strong> plugin for beautiful typography styling.</p>
+                <ul>
+                    <li>Automatic styling for lists</li>
+                    <li>Proper spacing and typography</li>
+                    <li>Enhanced readability</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="mt-4 text-sm text-gray-600">
         <p>✅ Livewire is properly configured and working!</p>
         <p>✅ Real-time updates without page refresh</p>
         <p>✅ Tailwind CSS styling applied</p>
         <p>✅ Alpine.js integration functional</p>
+        <p>✅ @tailwindcss/forms plugin working</p>
+        <p>✅ @tailwindcss/typography plugin working</p>
+        <p>✅ PostCSS configuration active</p>
     </div>
 </div>

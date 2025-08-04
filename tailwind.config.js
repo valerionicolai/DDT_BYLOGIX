@@ -5,6 +5,10 @@ export default {
     "./resources/**/*.js",
     "./resources/**/*.vue",
     "./app/**/*.php",
+    // Filament vendor paths for proper styling
+    "./vendor/filament/**/*.blade.php",
+    "./app/Filament/**/*.php",
+    "./app/Livewire/**/*.php",
   ],
   theme: {
     extend: {
@@ -17,5 +21,9 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // Tailwind CSS plugins for enhanced functionality
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+  ],
 }
