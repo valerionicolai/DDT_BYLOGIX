@@ -24,7 +24,8 @@ class FilamentAdminMiddleware
         $user = Auth::user();
 
         // Check if user can access admin panel using the FilamentUser interface method
-        if (!$user->canAccessPanel(app(\Filament\Panel::class))) {
+        $adminPanel = \Filament\Facades\Filament::getPanel('admin');
+        if (!$user->canAccessPanel($adminPanel)) {
             // Log the unauthorized access attempt
             logger()->warning('Unauthorized admin panel access attempt', [
                 'user_id' => $user->id,

@@ -124,11 +124,16 @@ class User extends Authenticatable implements FilamentUser
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        // Get panel ID safely
-        $panelId = $panel->getId();
+        // Get panel ID safely - handle case where panel might not have an ID set
+        try {
+            $panelId = $panel->getId();
+        } catch (\Exception $e) {
+            // If panel doesn't have an ID, treat as admin panel for backward compatibility
+            $panelId = 'admin';
+        }
         
         // Allow access to admin panel for users with admin role or admin permission
-        if ($panelId === 'admin' || $panelId === null) {
+        if ($panelId === 'admin' || $panelId === null || empty($panelId)) {
             return $this->hasRoleColumn('admin') || $this->can('access_admin_panel');
         }
 

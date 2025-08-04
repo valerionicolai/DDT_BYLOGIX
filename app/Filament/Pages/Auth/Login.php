@@ -65,4 +65,9 @@ class Login extends BaseLogin
     {
         return 'Please sign in to access the admin panel';
     }
+
+    protected function getRedirectUrl(): ?string
+    {
+        return '/admin';
+    }
 }
