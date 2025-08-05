@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\MaterialTypeController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\ProjectStateController;
+use App\Http\Controllers\ProjectPriorityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -68,6 +70,54 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::patch('/{id}', [ProjectController::class, 'update']);
             Route::delete('/{id}', [ProjectController::class, 'destroy']);
             Route::put('/{id}/progress', [ProjectController::class, 'updateProgress']);
+        });
+    });
+
+    // Project State Management routes
+    Route::prefix('project-states')->group(function () {
+        // Public read routes (accessible to all authenticated users)
+        Route::get('/', [ProjectStateController::class, 'index']);
+        Route::get('/options', [ProjectStateController::class, 'options']);
+        Route::get('/statistics', [ProjectStateController::class, 'statistics']);
+        Route::get('/{state}/projects', [ProjectStateController::class, 'projectsByState']);
+        Route::get('/{state}/eligible-projects', [ProjectStateController::class, 'eligibleProjects']);
+        Route::get('/overdue-projects', [ProjectStateController::class, 'overdueProjects']);
+        
+        // Project-specific state routes
+        Route::get('/projects/{project}/valid-transitions', [ProjectStateController::class, 'validTransitions']);
+        
+        // Admin-only state management operations
+        Route::middleware('admin')->group(function () {
+            Route::post('/projects', [ProjectStateController::class, 'store']);
+            Route::put('/projects/{project}', [ProjectStateController::class, 'update']);
+            Route::patch('/projects/{project}/transition', [ProjectStateController::class, 'transition']);
+            Route::post('/bulk-transition', [ProjectStateController::class, 'bulkTransition']);
+            Route::post('/archive-eligible', [ProjectStateController::class, 'archiveEligible']);
+            Route::post('/review-overdue', [ProjectStateController::class, 'reviewOverdue']);
+        });
+    });
+
+    // Project Priority Management routes
+    Route::prefix('project-priorities')->group(function () {
+        // Public read routes (accessible to all authenticated users)
+        Route::get('/', [ProjectPriorityController::class, 'index']);
+        Route::get('/options', [ProjectPriorityController::class, 'options']);
+        Route::get('/statistics', [ProjectPriorityController::class, 'statistics']);
+        Route::get('/{priority}/projects', [ProjectPriorityController::class, 'getProjectsByPriority']);
+        Route::get('/urgent-projects', [ProjectPriorityController::class, 'getUrgentProjects']);
+        Route::get('/high-priority-projects', [ProjectPriorityController::class, 'getHighPriorityProjects']);
+        Route::get('/ordered-by-priority', [ProjectPriorityController::class, 'getProjectsOrderedByPriority']);
+        Route::get('/needing-escalation', [ProjectPriorityController::class, 'getProjectsNeedingEscalation']);
+        
+        // Admin-only priority management operations
+        Route::middleware('admin')->group(function () {
+            Route::post('/projects', [ProjectPriorityController::class, 'store']);
+            Route::put('/projects/{project}', [ProjectPriorityController::class, 'update']);
+            Route::patch('/projects/{project}/change-priority', [ProjectPriorityController::class, 'changePriority']);
+            Route::patch('/projects/{project}/escalate', [ProjectPriorityController::class, 'escalatePriority']);
+            Route::patch('/projects/{project}/de-escalate', [ProjectPriorityController::class, 'deEscalatePriority']);
+            Route::post('/bulk-change-priority', [ProjectPriorityController::class, 'bulkChangePriority']);
+            Route::post('/auto-escalate', [ProjectPriorityController::class, 'autoEscalateProjects']);
         });
     });
 
