@@ -127,4 +127,4 @@ git push origin feature/s[sprint]-[task-id]-[description]
 
 ## Team di Sviluppo
 
-Progetto sviluppato per DTT by Logix seguendo le specifiche del documento di progettazione esecutiva.
+Progetto sviluppato per DDT by Logix seguendo le specifiche del documento di progettazione esecutiva.

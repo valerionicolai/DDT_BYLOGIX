@@ -7,7 +7,7 @@ use Livewire\Component;
 class TestComponent extends Component
 {
     public $count = 0;
-    public $message = 'DTT by Logix - Livewire is working!';
+    public $message = 'DDT by Logix - Livewire is working!';
 
     public function increment()
     {

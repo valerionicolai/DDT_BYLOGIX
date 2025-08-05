@@ -129,7 +129,7 @@ return [
 
     'navigate' => [
         'show_progress_bar' => true,
-        'progress_bar_color' => '#3b82f6', // Blue color to match DTT by Logix branding
+        'progress_bar_color' => '#3b82f6', // Blue color to match DDT by Logix branding
     ],
 
     /*
