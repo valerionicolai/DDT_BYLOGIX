@@ -107,6 +107,24 @@
 - [ ] Aggiungere tracking costi materiali
 - [ ] Implementare previsioni fabbisogno
 
+### 12.1. Sistema Barcode - Migliorie Future
+**Priorità: BASSA**
+- [ ] **Template Etichette Personalizzabili**: Implementare sistema di template personalizzabili per etichette barcode
+  - [ ] Layout configurabile (dimensioni, posizione barcode, testo)
+  - [ ] Informazioni selezionabili (nome materiale, documento, data, etc.)
+  - [ ] Formati stampa multipli (A4 multi-etichette, etichette singole, formato Avery)
+  - [ ] Editor visuale per template
+- [ ] **Relazione Gerarchica Barcode**: Implementare struttura gerarchica per barcode
+  - [ ] Documento: `DOC-{YYYY}-{###}` (es: DOC-2024-001)
+  - [ ] Materiale: `{DOC_BARCODE}-MAT-{##}` (es: DOC-2024-001-MAT-01)
+  - [ ] Logica di generazione automatica sequenziale
+  - [ ] Validazione unicità gerarchica
+- [ ] **Material Types Gerarchici**: Aggiungere supporto struttura padre/figlio per tipi materiali
+  - [ ] Aggiungere campo `parent_id` alla tabella `material_types`
+  - [ ] Implementare logica ricorsiva per categorie/sottocategorie
+  - [ ] Interface Filament per gestione gerarchia
+  - [ ] Validazione circolarità relazioni
+
 ## 🔄 Integrazione e API
 
 ### 13. API Esterne

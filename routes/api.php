@@ -3,11 +3,12 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\DocumentController;
+use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\MaterialTypeController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\ProjectStateController;
-use App\Http\Controllers\ProjectPriorityController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -97,29 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    // Project Priority Management routes
-    Route::prefix('project-priorities')->group(function () {
-        // Public read routes (accessible to all authenticated users)
-        Route::get('/', [ProjectPriorityController::class, 'index']);
-        Route::get('/options', [ProjectPriorityController::class, 'options']);
-        Route::get('/statistics', [ProjectPriorityController::class, 'statistics']);
-        Route::get('/{priority}/projects', [ProjectPriorityController::class, 'getProjectsByPriority']);
-        Route::get('/urgent-projects', [ProjectPriorityController::class, 'getUrgentProjects']);
-        Route::get('/high-priority-projects', [ProjectPriorityController::class, 'getHighPriorityProjects']);
-        Route::get('/ordered-by-priority', [ProjectPriorityController::class, 'getProjectsOrderedByPriority']);
-        Route::get('/needing-escalation', [ProjectPriorityController::class, 'getProjectsNeedingEscalation']);
-        
-        // Admin-only priority management operations
-        Route::middleware('admin')->group(function () {
-            Route::post('/projects', [ProjectPriorityController::class, 'store']);
-            Route::put('/projects/{project}', [ProjectPriorityController::class, 'update']);
-            Route::patch('/projects/{project}/change-priority', [ProjectPriorityController::class, 'changePriority']);
-            Route::patch('/projects/{project}/escalate', [ProjectPriorityController::class, 'escalatePriority']);
-            Route::patch('/projects/{project}/de-escalate', [ProjectPriorityController::class, 'deEscalatePriority']);
-            Route::post('/bulk-change-priority', [ProjectPriorityController::class, 'bulkChangePriority']);
-            Route::post('/auto-escalate', [ProjectPriorityController::class, 'autoEscalateProjects']);
-        });
-    });
+
 
     // Material Types routes (admin only for create/update/delete)
     Route::prefix('material-types')->group(function () {
@@ -136,6 +115,29 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::patch('/{id}', [MaterialTypeController::class, 'update']);
             Route::delete('/{id}', [MaterialTypeController::class, 'destroy']);
         });
+    });
+
+    // Materials routes
+    Route::prefix('materials')->group(function () {
+        // Public search routes (for QR code scanning)
+        Route::get('/search', [MaterialController::class, 'searchByQRCode']);
+        
+        // Export route
+        Route::get('/export/csv', [MaterialController::class, 'exportCsv']);
+        
+        // Statistics route (admin only)
+        Route::get('/stats', [MaterialController::class, 'stats'])->middleware('admin');
+        
+        // Standard CRUD routes
+        Route::get('/', [MaterialController::class, 'index']);
+        Route::get('/{material}', [MaterialController::class, 'show']);
+        Route::post('/', [MaterialController::class, 'store']);
+        Route::put('/{material}', [MaterialController::class, 'update']);
+        Route::patch('/{material}', [MaterialController::class, 'update']);
+        Route::delete('/{material}', [MaterialController::class, 'destroy']);
+        
+        // Special routes
+        Route::post('/{material}/regenerate-qr', [MaterialController::class, 'regenerateQRCode']);
     });
 
     // Document routes

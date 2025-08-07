@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MaterialType extends Model
 {
@@ -34,6 +35,14 @@ class MaterialType extends Model
         'properties' => 'array',
         'status' => 'string',
     ];
+
+    /**
+     * Get the materials for this material type.
+     */
+    public function materials(): HasMany
+    {
+        return $this->hasMany(Material::class);
+    }
 
     /**
      * Scope a query to only include active material types.

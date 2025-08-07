@@ -45,7 +45,7 @@ class RecentActivity extends Widget
                             'icon' => 'heroicon-o-folder',
                             'color' => 'primary',
                             'title' => "Project: {$project->name}",
-                            'description' => 'Client: ' . ($project->client->name ?? 'N/A') . ' | Status: ' . ucfirst($project->status),
+                            'description' => 'Client: ' . ($project->client->name ?? 'N/A') . ' | Status: ' . $project->status->label(),
                             'user_name' => $project->user->name ?? 'System',
                             'created_at' => $project->created_at,
                             'url' => '#',
@@ -58,7 +58,7 @@ class RecentActivity extends Widget
 
             // Get recent documents
             try {
-                $recentDocuments = Document::with('project', 'user')
+                $recentDocuments = Document::with('documentType', 'documentCategory', 'client')
                     ->latest()
                     ->limit(5)
                     ->get()
@@ -68,9 +68,9 @@ class RecentActivity extends Widget
                             'type' => 'document',
                             'icon' => 'heroicon-o-document',
                             'color' => 'success',
-                            'title' => "Document: {$document->name}",
-                            'description' => 'Project: ' . ($document->project->name ?? 'N/A') . ' | Type: ' . ucfirst($document->type ?? 'file'),
-                            'user_name' => $document->user->name ?? 'System',
+                            'title' => "Document: {$document->title}",
+                            'description' => 'Client: ' . ($document->client->name ?? 'N/A') . ' | Type: ' . ($document->documentType->name ?? 'Document'),
+                            'user_name' => 'System',
                             'created_at' => $document->created_at,
                             'url' => '#',
                         ];

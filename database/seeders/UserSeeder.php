@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'admin@dttbylogix.com'],
             [
-                'name' => 'Admin DTT',
+                'name' => 'Admin DDT',
                 'password' => Hash::make('password123'),
                 'email_verified_at' => now(),
                 'role' => 'admin',

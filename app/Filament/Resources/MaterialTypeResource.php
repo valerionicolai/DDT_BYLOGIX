@@ -19,6 +19,10 @@ class MaterialTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Settings';
+
+    protected static ?int $navigationSort = 3;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -34,8 +38,14 @@ class MaterialTypeResource extends Resource
                 Forms\Components\TextInput::make('category'),
                 Forms\Components\Textarea::make('properties')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('status')
-                    ->required(),
+                Forms\Components\Select::make('status')
+                    ->required()
+                    ->options([
+                        'active' => 'Attivo',
+                        'inactive' => 'Inattivo',
+                    ])
+                    ->default('active')
+                    ->native(false),
             ]);
     }
 
@@ -52,7 +62,16 @@ class MaterialTypeResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('category')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\BadgeColumn::make('status')
+                    ->colors([
+                        'success' => 'active',
+                        'danger' => 'inactive',
+                    ])
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'active' => 'Attivo',
+                        'inactive' => 'Inattivo',
+                        default => $state,
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -64,9 +83,15 @@ class MaterialTypeResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'active' => 'Attivo',
+                        'inactive' => 'Inattivo',
+                    ])
+                    ->label('Stato'),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -88,6 +113,7 @@ class MaterialTypeResource extends Resource
         return [
             'index' => Pages\ListMaterialTypes::route('/'),
             'create' => Pages\CreateMaterialType::route('/create'),
+            'view' => Pages\ViewMaterialType::route('/{record}'),
             'edit' => Pages\EditMaterialType::route('/{record}/edit'),
         ];
     }

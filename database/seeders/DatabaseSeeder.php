@@ -17,8 +17,12 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             UserSeeder::class,
             ClientSeeder::class,
+            DocumentTypeSeeder::class,
+            DocumentCategorySeeder::class,
             MaterialTypeSeeder::class,
             ProjectSeeder::class,
+            DocumentSeeder::class,
+            MaterialSeeder::class,
         ]);
     }
 }

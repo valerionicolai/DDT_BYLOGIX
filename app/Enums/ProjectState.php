@@ -139,4 +139,28 @@ enum ProjectState: string
     {
         return in_array($this, [self::DRAFT, self::PLANNING, self::ON_HOLD]);
     }
+
+    /**
+     * Get the label for the project state (alias for label method).
+     */
+    public function getLabel(): string
+    {
+        return $this->label();
+    }
+
+    /**
+     * Get the color for the project state (alias for color method).
+     */
+    public function getColor(): string
+    {
+        return $this->color();
+    }
+
+    /**
+     * Get the icon for the project state (alias for icon method).
+     */
+    public function getIcon(): string
+    {
+        return $this->icon();
+    }
 }

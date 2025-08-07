@@ -53,12 +53,12 @@ class Login extends BaseLogin
 
     public function getTitle(): string
     {
-        return 'DTT by Logix - Admin Login';
+        return 'DDT by Logix - Admin Login';
     }
 
     public function getHeading(): string
     {
-        return 'Welcome to DTT by Logix';
+        return 'Welcome to DDT by Logix';
     }
 
     public function getSubheading(): ?string

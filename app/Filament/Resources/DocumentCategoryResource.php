@@ -25,7 +25,7 @@ class DocumentCategoryResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -216,8 +216,5 @@ class DocumentCategoryResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
+
 }

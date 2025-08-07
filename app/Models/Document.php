@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
@@ -21,6 +22,20 @@ class Document extends Model
             // Delete associated file when document is deleted
             $document->deleteFile();
         });
+
+        static::creating(function ($document) {
+            if (empty($document->barcode)) {
+                $document->barcode = app(\App\Services\BarcodeService::class)->generateDocumentBarcode($document->id ?? 0);
+            }
+        });
+
+        static::created(function ($document) {
+            // Aggiorna il barcode con l'ID reale dopo la creazione
+            if ($document->barcode === app(\App\Services\BarcodeService::class)->generateDocumentBarcode(0)) {
+                $document->barcode = app(\App\Services\BarcodeService::class)->generateDocumentBarcode($document->id);
+                $document->saveQuietly();
+            }
+        });
     }
 
     protected $fillable = [
@@ -29,6 +44,7 @@ class Document extends Model
         'document_type_id',
         'document_category_id',
         'client_id',
+        'project_id',
         'file_path',
         'status',
         'barcode',
@@ -77,14 +93,27 @@ class Document extends Model
     }
 
     /**
+     * Get the project that owns the document
+     */
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * Get the materials for the document
+     */
+    public function materials(): HasMany
+    {
+        return $this->hasMany(Material::class);
+    }
+
+    /**
      * Generate a unique barcode for the document
      */
     public function generateBarcode(): string
     {
-        // Generate a barcode based on document ID and timestamp
-        $prefix = strtoupper(substr($this->documentCategory?->code ?? 'DOC', 0, 1));
-        $id = str_pad($this->id, 4, '0', STR_PAD_LEFT);
-        return $prefix . $id;
+        return app(\App\Services\BarcodeService::class)->generateDocumentBarcode($this->id);
     }
 
     /**
@@ -94,6 +123,22 @@ class Document extends Model
     {
         $this->barcode = $this->generateBarcode();
         return $this->save();
+    }
+
+    /**
+     * Get barcode SVG
+     */
+    public function getBarcodeSVG(): string
+    {
+        return app(\App\Services\BarcodeService::class)->generateBarcodeSVG($this->barcode);
+    }
+
+    /**
+     * Get barcode PNG (base64)
+     */
+    public function getBarcodePNG(): string
+    {
+        return app(\App\Services\BarcodeService::class)->generateBarcodePNG($this->barcode);
     }
 
 

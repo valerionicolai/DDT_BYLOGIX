@@ -7,6 +7,7 @@ use App\Enums\ProjectPriority;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends Model
 {
@@ -67,6 +68,14 @@ class Project extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the documents for the project.
+     */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
     }
 
     /**
@@ -271,88 +280,7 @@ class Project extends Model
         return $this->priority->icon();
     }
 
-    /**
-     * Get the priority weight
-     */
-    public function getPriorityWeightAttribute(): int
-    {
-        return $this->priority->weight();
-    }
 
-    /**
-     * Get the priority description
-     */
-    public function getPriorityDescriptionAttribute(): string
-    {
-        return $this->priority->description();
-    }
-
-    /**
-     * Get the priority SLA hours
-     */
-    public function getPrioritySlaHoursAttribute(): int
-    {
-        return $this->priority->slaHours();
-    }
-
-    /**
-     * Check if the project has high priority
-     */
-    public function isHighPriority(): bool
-    {
-        return $this->priority->isHighLevel();
-    }
-
-    /**
-     * Check if the project has low priority
-     */
-    public function isLowPriority(): bool
-    {
-        return $this->priority->isLowLevel();
-    }
-
-    /**
-     * Check if the project requires immediate attention
-     */
-    public function requiresImmediateAttention(): bool
-    {
-        return $this->priority->requiresImmediateAttention();
-    }
-
-    /**
-     * Escalate project priority
-     */
-    public function escalatePriority(): bool
-    {
-        $newPriority = $this->priority->escalate();
-        if ($newPriority) {
-            $this->priority = $newPriority;
-            return $this->save();
-        }
-        return false;
-    }
-
-    /**
-     * De-escalate project priority
-     */
-    public function deEscalatePriority(): bool
-    {
-        $newPriority = $this->priority->deEscalate();
-        if ($newPriority) {
-            $this->priority = $newPriority;
-            return $this->save();
-        }
-        return false;
-    }
-
-    /**
-     * Set project priority
-     */
-    public function setPriority(ProjectPriority $priority): bool
-    {
-        $this->priority = $priority;
-        return $this->save();
-    }
 
     /**
      * Scope for projects in specific state categories
@@ -381,49 +309,7 @@ class Project extends Model
         ));
     }
 
-    /**
-     * Scope for projects with high priority levels
-     */
-    public function scopeHighPriority($query)
-    {
-        return $query->whereIn('priority', array_map(
-            fn($priority) => $priority->value,
-            ProjectPriority::getHighLevelPriorities()
-        ));
-    }
 
-    /**
-     * Scope for projects with low priority levels
-     */
-    public function scopeLowPriority($query)
-    {
-        return $query->whereIn('priority', array_map(
-            fn($priority) => $priority->value,
-            ProjectPriority::getLowLevelPriorities()
-        ));
-    }
-
-    /**
-     * Scope for projects requiring immediate attention
-     */
-    public function scopeUrgentPriority($query)
-    {
-        return $query->whereIn('priority', array_map(
-            fn($priority) => $priority->value,
-            ProjectPriority::getUrgentPriorities()
-        ));
-    }
-
-    /**
-     * Scope for projects ordered by priority weight (highest first)
-     */
-    public function scopeOrderByPriority($query)
-    {
-        return $query->orderByRaw("FIELD(priority, '" . implode("','", array_map(
-            fn($priority) => $priority->value,
-            array_reverse(ProjectPriority::sortedByWeight())
-        )) . "')");
-    }
 
     /**
      * Scope for projects with specific priority levels

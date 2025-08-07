@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\ProjectState;
+use App\Enums\ProjectPriority;
 use App\Filament\Resources\ProjectStateResource\Pages;
 use App\Models\Project;
 use App\Services\ProjectStateService;
@@ -26,9 +27,9 @@ class ProjectStateResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Stati Progetti';
 
-    protected static ?string $navigationGroup = 'Gestione Progetti';
+    protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {
@@ -72,13 +73,8 @@ class ProjectStateResource extends Resource
                         
                         Forms\Components\Select::make('priority')
                             ->label('Priorità')
-                            ->options([
-                                'low' => 'Bassa',
-                                'medium' => 'Media',
-                                'high' => 'Alta',
-                                'urgent' => 'Urgente',
-                            ])
-                            ->default('medium'),
+                            ->options(ProjectPriority::options())
+                            ->default(ProjectPriority::MEDIUM->value),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Date e Scadenze')
@@ -163,17 +159,13 @@ class ProjectStateResource extends Resource
                 
                 Tables\Columns\BadgeColumn::make('priority')
                     ->label('Priorità')
-                    ->formatStateUsing(fn (string $state): string => match($state) {
-                        'low' => 'Bassa',
-                        'medium' => 'Media',
-                        'high' => 'Alta',
-                        'urgent' => 'Urgente',
-                        default => $state,
-                    })
+                    ->formatStateUsing(fn (ProjectPriority $state): string => $state->label())
                     ->colors([
-                        'success' => 'low',
-                        'warning' => 'medium',
-                        'danger' => ['high', 'urgent'],
+                        'green' => ProjectPriority::LOW->value,
+                        'blue' => ProjectPriority::MEDIUM->value,
+                        'yellow' => ProjectPriority::HIGH->value,
+                        'orange' => ProjectPriority::URGENT->value,
+                        'red' => ProjectPriority::CRITICAL->value,
                     ]),
                 
                 Tables\Columns\TextColumn::make('user.name')
@@ -205,12 +197,7 @@ class ProjectStateResource extends Resource
                 
                 Tables\Filters\SelectFilter::make('priority')
                     ->label('Priorità')
-                    ->options([
-                        'low' => 'Bassa',
-                        'medium' => 'Media',
-                        'high' => 'Alta',
-                        'urgent' => 'Urgente',
-                    ]),
+                    ->options(ProjectPriority::options()),
                 
                 Tables\Filters\Filter::make('overdue')
                     ->label('In Ritardo')
