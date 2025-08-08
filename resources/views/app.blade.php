@@ -15,6 +15,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased">
-    <div id="app"></div>
+    <!-- This template is now used only for public pages -->
+    <!-- Filament admin panel has its own layout -->
+    @yield('content')
 </body>
 </html>

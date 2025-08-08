@@ -1,6 +1,6 @@
 @extends('public.layout')
 
-@section('title', 'QR Code Non Valido')
+@section('title', 'Invalid QR Code')
 
 @section('content')
 <div class="max-w-2xl mx-auto text-center">
@@ -13,10 +13,10 @@
         </div>
 
         <!-- Error Message -->
-        <h1 class="text-2xl font-bold text-gray-900 mb-4">QR Code Non Valido</h1>
+        <h1 class="text-2xl font-bold text-gray-900 mb-4">Invalid QR Code</h1>
         
         <p class="text-gray-600 mb-6">
-            {{ $message ?? 'Il QR code scansionato non è valido o non è più disponibile.' }}
+            {{ $message ?? 'The scanned QR code is invalid or no longer available.' }}
         </p>
 
         @if(isset($error) && $error)
@@ -28,7 +28,7 @@
                     </svg>
                 </div>
                 <div class="ml-3">
-                    <h3 class="text-sm font-medium text-red-800">Dettagli Errore</h3>
+                    <h3 class="text-sm font-medium text-red-800">Error Details</h3>
                     <div class="mt-2 text-sm text-red-700">
                         <p>{{ $error }}</p>
                     </div>
@@ -39,12 +39,12 @@
 
         <!-- Possible Causes -->
         <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-6 text-left">
-            <h3 class="text-sm font-medium text-yellow-800 mb-2">Possibili Cause:</h3>
+            <h3 class="text-sm font-medium text-yellow-800 mb-2">Possible Causes:</h3>
             <ul class="text-sm text-yellow-700 space-y-1">
-                <li>• Il QR code è danneggiato o illeggibile</li>
-                <li>• Il materiale o documento è stato rimosso dal sistema</li>
-                <li>• Il QR code è scaduto o non più valido</li>
-                <li>• Errore di scansione o lettura del codice</li>
+                <li>• The QR code is damaged or unreadable</li>
+                <li>• The material or document has been removed from the system</li>
+                <li>• The QR code has expired or is no longer valid</li>
+                <li>• Scanning or reading error of the code</li>
             </ul>
         </div>
 
@@ -55,7 +55,7 @@
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V6a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1z"></path>
                 </svg>
-                Scansiona Nuovo QR Code
+                Scan New QR Code
             </a>
             
             <button onclick="window.history.back()" 
@@ -63,16 +63,16 @@
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                Torna Indietro
+                Go Back
             </button>
         </div>
 
         <!-- Help Section -->
         <div class="mt-8 pt-6 border-t border-gray-200">
             <p class="text-sm text-gray-500">
-                Hai bisogno di aiuto? 
+                Need help? 
                 <a href="/admin" class="text-blue-600 hover:text-blue-800 font-medium">
-                    Contatta l'amministratore del sistema
+                    Contact the system administrator
                 </a>
             </p>
         </div>

@@ -24,11 +24,11 @@ enum ClientStatus: string
     public static function options(): array
     {
         return [
-            self::ACTIVE->value => 'Attivo',
-            self::INACTIVE->value => 'Inattivo',
-            self::PROSPECT->value => 'Prospetto',
-            self::SUSPENDED->value => 'Sospeso',
-            self::ARCHIVED->value => 'Archiviato',
+            self::ACTIVE->value => 'Active',
+            self::INACTIVE->value => 'Inactive',
+            self::PROSPECT->value => 'Prospect',
+            self::SUSPENDED->value => 'Suspended',
+            self::ARCHIVED->value => 'Archived',
         ];
     }
 
@@ -38,11 +38,11 @@ enum ClientStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::ACTIVE => 'Attivo',
-            self::INACTIVE => 'Inattivo',
-            self::PROSPECT => 'Prospetto',
-            self::SUSPENDED => 'Sospeso',
-            self::ARCHIVED => 'Archiviato',
+            self::ACTIVE => 'Active',
+            self::INACTIVE => 'Inactive',
+            self::PROSPECT => 'Prospect',
+            self::SUSPENDED => 'Suspended',
+            self::ARCHIVED => 'Archived',
         };
     }
 

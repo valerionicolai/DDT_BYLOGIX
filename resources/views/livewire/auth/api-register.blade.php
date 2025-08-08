@@ -10,7 +10,7 @@
                 Create your account
             </h2>
             <p class="mt-2 text-center text-sm text-gray-600">
-                Join the DTT Management System
+                Join the DDT Management System
             </p>
         </div>
 

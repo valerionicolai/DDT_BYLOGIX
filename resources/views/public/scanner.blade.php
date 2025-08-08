@@ -80,8 +80,8 @@
 <div class="max-w-4xl mx-auto">
     <!-- Header -->
     <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Scanner QR Code</h1>
-        <p class="text-gray-600">Scansiona un QR code per visualizzare le informazioni del materiale o documento</p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">QR Code Scanner</h1>
+        <p class="text-gray-600">Scan a QR code to view material or document information</p>
     </div>
 
     <div x-data="qrScanner()" x-init="init()" class="space-y-6">
@@ -89,7 +89,7 @@
         <div class="bg-white rounded-lg shadow-lg p-6">
             <div class="text-center mb-4">
                 <h2 class="text-xl font-semibold text-gray-900 mb-2">Camera Scanner</h2>
-                <p class="text-sm text-gray-600">Posiziona il QR code all'interno del riquadro</p>
+                <p class="text-sm text-gray-600">Position the QR code within the frame</p>
             </div>
 
             <!-- Scanner Container -->
@@ -110,7 +110,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     </svg>
-                    <p class="text-gray-500">Camera non attiva</p>
+                    <p class="text-gray-500">Camera not active</p>
                 </div>
             </div>
 
@@ -122,7 +122,7 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                     </svg>
-                    Avvia Camera
+                    Start Camera
                 </button>
                 
                 <button @click="stopCamera()" 
@@ -132,7 +132,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
                     </svg>
-                    Ferma Camera
+                    Stop Camera
                 </button>
             </div>
 
@@ -144,31 +144,31 @@
 
         <!-- Manual Input Section -->
         <div class="bg-white rounded-lg shadow-lg p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Inserimento Manuale</h2>
-            <p class="text-sm text-gray-600 mb-4">Se non riesci a scansionare, inserisci manualmente il codice QR</p>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Manual Input</h2>
+            <p class="text-sm text-gray-600 mb-4">If you can't scan, manually enter the QR code</p>
             
             <form @submit.prevent="processManualCode()" class="space-y-4">
                 <div>
-                    <label for="manual-code" class="block text-sm font-medium text-gray-700">Codice QR</label>
+                    <label for="manual-code" class="block text-sm font-medium text-gray-700">QR Code</label>
                     <input type="text" 
                            id="manual-code" 
                            x-model="manualCode"
                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                           placeholder="Inserisci il codice QR o l'ID">
+                           placeholder="Enter the QR code or ID">
                 </div>
                 <button type="submit" 
                         class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
-                    Cerca
+                    Search
                 </button>
             </form>
         </div>
 
         <!-- Recent Scans -->
         <div class="bg-white rounded-lg shadow-lg p-6" x-show="recentScans.length > 0">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Scansioni Recenti</h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Scans</h2>
             <div class="space-y-2">
                 <template x-for="scan in recentScans" :key="scan.id">
                     <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -178,7 +178,7 @@
                         </div>
                         <a :href="scan.url" 
                            class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                            Visualizza
+                            View
                         </a>
                     </div>
                 </template>
@@ -210,7 +210,7 @@ function qrScanner() {
 
         async startCamera() {
             try {
-                this.message = 'Avvio della camera...';
+                this.message = 'Starting camera...';
                 this.messageType = 'info';
                 
                 const stream = await navigator.mediaDevices.getUserMedia({
@@ -224,15 +224,15 @@ function qrScanner() {
                 this.video = document.getElementById('scanner-video');
                 this.video.srcObject = stream;
                 this.cameraActive = true;
-                this.message = 'Camera attiva. Posiziona il QR code nel riquadro.';
+                this.message = 'Camera active. Position the QR code in the frame.';
                 
                 this.video.addEventListener('loadedmetadata', () => {
                     this.startScanning();
                 });
                 
             } catch (error) {
-                console.error('Errore accesso camera:', error);
-                this.message = 'Impossibile accedere alla camera. Verifica i permessi.';
+                console.error('Camera access error:', error);
+                this.message = 'Unable to access camera. Check permissions.';
                 this.messageType = 'error';
             }
         },
@@ -245,7 +245,7 @@ function qrScanner() {
             }
             this.cameraActive = false;
             this.scanning = false;
-            this.message = 'Camera fermata.';
+            this.message = 'Camera stopped.';
             this.messageType = 'info';
         },
 
@@ -280,7 +280,7 @@ function qrScanner() {
 
         async processQRCode(qrData) {
             this.scanning = false;
-            this.message = 'QR Code rilevato! Elaborazione...';
+            this.message = 'QR Code detected! Processing...';
             this.messageType = 'info';
             
             try {
@@ -297,12 +297,12 @@ function qrScanner() {
                     // If it's a redirect, follow it
                     window.location.href = response.url;
                 } else {
-                    throw new Error('QR Code non valido');
+                    throw new Error('Invalid QR Code');
                 }
                 
             } catch (error) {
-                console.error('Errore elaborazione QR:', error);
-                this.message = 'QR Code non valido o non riconosciuto.';
+                console.error('QR processing error:', error);
+                this.message = 'Invalid or unrecognized QR Code.';
                 this.messageType = 'error';
                 
                 // Restart scanning after error
@@ -315,12 +315,12 @@ function qrScanner() {
 
         async processManualCode() {
             if (!this.manualCode.trim()) {
-                this.message = 'Inserisci un codice valido.';
+                this.message = 'Please enter a valid code.';
                 this.messageType = 'error';
                 return;
             }
             
-            this.message = 'Elaborazione codice...';
+            this.message = 'Processing code...';
             this.messageType = 'info';
             
             try {
@@ -329,12 +329,12 @@ function qrScanner() {
                 if (response.ok) {
                     window.location.href = response.url;
                 } else {
-                    throw new Error('Codice non valido');
+                    throw new Error('Invalid code');
                 }
                 
             } catch (error) {
-                console.error('Errore elaborazione codice:', error);
-                this.message = 'Codice non valido o non riconosciuto.';
+                console.error('Code processing error:', error);
+                this.message = 'Invalid or unrecognized code.';
                 this.messageType = 'error';
             }
         },

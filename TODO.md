@@ -1,84 +1,56 @@
-# TODO - DTT by Logix
-
-## 🚨 Problematiche Critiche da Risolvere
-
-### 1. Gestione Sessioni e Autenticazione
-**Priorità: ALTA**
-- [ ] **Problema**: Le sessioni non persistono tra le interazioni, causando redirect continui alla pagina di login
-- [ ] **Causa**: Configurazione sessioni Laravel o gestione token nel frontend Vue.js
-- [ ] **Azioni**:
-  - [ ] Verificare configurazione sessioni in `config/session.php`
-  - [ ] Controllare che i token di autenticazione siano correttamente salvati in localStorage/sessionStorage
-  - [ ] Assicurarsi che le richieste API includano gli header di autenticazione
-  - [ ] Verificare configurazione CORS per permettere credenziali
-  - [ ] Implementare refresh automatico dei token scaduti
-
-### 2. Configurazione CORS
-**Priorità: MEDIA**
-- [ ] **Problema**: Possibili problemi di CORS tra frontend Vue.js e backend Laravel
-- [ ] **Azioni**:
-  - [ ] Configurare correttamente CORS in Laravel
-  - [ ] Permettere credenziali nelle richieste cross-origin
-  - [ ] Verificare header permessi
+# TODO - DTT by Logix (Filament-only Architecture)
 
 ## 🔧 Migliorie Tecniche
 
-### 3. Gestione Errori e Feedback Utente
+### 1. Sicurezza
 **Priorità: ALTA**
-- [ ] Implementare sistema di notifiche toast per feedback operazioni
-- [ ] Aggiungere gestione errori centralizzata
-- [ ] Implementare loading states per operazioni asincrone
-- [ ] Aggiungere validazione form lato client
-- [ ] Implementare messaggi di errore user-friendly
+- [ ] Implementare rate limiting per API pubbliche
+- [ ] Rafforzare validazione CSRF per form Filament
+- [ ] Implementare sanitizzazione input avanzata
+- [ ] Aggiungere logging delle operazioni sensibili (audit trail)
+- [ ] Implementare controllo permessi granulare per ruoli Filament
+- [ ] Configurare 2FA per utenti amministratori
 
-### 4. Sicurezza
-**Priorità: ALTA**
-- [ ] Implementare rate limiting per API
-- [ ] Aggiungere validazione CSRF
-- [ ] Implementare sanitizzazione input
-- [ ] Aggiungere logging delle operazioni sensibili
-- [ ] Implementare controllo permessi granulare per ruoli
-
-### 5. Performance e Ottimizzazione
+### 2. Performance e Ottimizzazione
 **Priorità: MEDIA**
-- [ ] Implementare lazy loading per componenti Vue
-- [ ] Aggiungere caching per richieste API frequenti
 - [ ] Ottimizzare query database con eager loading
-- [ ] Implementare paginazione per liste lunghe
-- [ ] Aggiungere compressione assets
+- [ ] Implementare caching Redis per sessioni e dati frequenti
+- [ ] Aggiungere compressione assets e ottimizzazione immagini
+- [ ] Implementare lazy loading per tabelle Filament con molti record
+- [ ] Configurare OPcache per PHP in produzione
 
-### 6. Testing
+### 3. Testing e Qualità
 **Priorità: MEDIA**
-- [ ] Implementare test unitari per componenti Vue
-- [ ] Aggiungere test di integrazione per API
-- [ ] Implementare test end-to-end con Cypress/Playwright
+- [ ] Espandere test Filament Resources e Pages
+- [ ] Aggiungere test di integrazione per API pubbliche
+- [ ] Implementare test end-to-end per QR scanner
 - [ ] Aggiungere test per autenticazione e autorizzazione
 - [ ] Implementare CI/CD pipeline con test automatici
 
-## 🎨 Migliorie UI/UX
-
-### 7. Interfaccia Utente
+### 4. Accessibilità
 **Priorità: MEDIA**
-- [ ] Implementare tema scuro/chiaro
-- [ ] Aggiungere animazioni e transizioni fluide
-- [ ] Migliorare responsive design per mobile
-- [ ] Implementare breadcrumb navigation
-- [ ] Aggiungere shortcuts da tastiera
-
-### 8. Accessibilità
-**Priorità: MEDIA**
-- [ ] Implementare supporto screen reader
-- [ ] Aggiungere attributi ARIA appropriati
-- [ ] Migliorare contrasto colori
-- [ ] Implementare navigazione da tastiera
+- [ ] Verificare supporto screen reader in Filament
+- [ ] Migliorare contrasto colori nel tema personalizzato
+- [ ] Implementare navigazione da tastiera ottimizzata
 - [ ] Aggiungere focus indicators visibili
+- [ ] Test accessibilità con strumenti automatici
 
-### 9. Gestione Clienti - Funzionalità Avanzate
-**Priorità: BASSA**
-- [ ] Implementare filtri avanzati per ricerca clienti
-- [ ] Aggiungere export dati in CSV/Excel
-- [ ] Implementare import bulk clienti
-- [ ] Aggiungere storico modifiche cliente
+## 📊 Funzionalità Business
+
+### 5. Dashboard e Analytics Filament
+**Priorità: ALTA**
+- [ ] Implementare widget dashboard con metriche chiave
+- [ ] Aggiungere grafici per visualizzazione dati (Chart.js/ApexCharts)
+- [ ] Implementare widget statistiche progetti/materiali
+- [ ] Aggiungere notifiche in-app per eventi importanti
+- [ ] Implementare widget calendario attività
+
+### 6. Gestione Clienti - Funzionalità Avanzate
+**Priorità: MEDIA**
+- [ ] Implementare filtri avanzati Filament per ricerca clienti
+- [ ] Aggiungere export dati in CSV/Excel tramite Filament Actions
+- [ ] Implementare import bulk clienti con validazione
+- [ ] Aggiungere storico modifiche cliente (audit log)
 - [ ] Implementare tag/categorie per clienti
 
 ## 📊 Funzionalità Business

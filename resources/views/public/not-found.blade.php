@@ -1,6 +1,6 @@
 @extends('public.layout')
 
-@section('title', $type . ' Non Trovato')
+@section('title', $type . ' Not Found')
 
 @section('content')
 <div class="max-w-2xl mx-auto text-center">
@@ -13,20 +13,20 @@
         </div>
 
         <!-- Error Message -->
-        <h1 class="text-2xl font-bold text-gray-900 mb-4">{{ $type }} Non Trovato</h1>
+        <h1 class="text-2xl font-bold text-gray-900 mb-4">{{ $type }} Not Found</h1>
         
         <p class="text-gray-600 mb-6">
-            {{ $message ?? 'L\'elemento richiesto non è stato trovato nel sistema.' }}
+            {{ $message ?? 'The requested item was not found in the system.' }}
         </p>
 
         <!-- Possible Actions -->
         <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6 text-left">
-            <h3 class="text-sm font-medium text-blue-800 mb-2">Cosa puoi fare:</h3>
+            <h3 class="text-sm font-medium text-blue-800 mb-2">What you can do:</h3>
             <ul class="text-sm text-blue-700 space-y-1">
-                <li>• Verifica che il QR code sia corretto</li>
-                <li>• Prova a scansionare nuovamente il codice</li>
-                <li>• Controlla che l'elemento non sia stato rimosso</li>
-                <li>• Contatta l'amministratore se il problema persiste</li>
+                <li>• Verify that the QR code is correct</li>
+                <li>• Try scanning the code again</li>
+                <li>• Check that the item has not been removed</li>
+                <li>• Contact the administrator if the problem persists</li>
             </ul>
         </div>
 
@@ -37,7 +37,7 @@
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V6a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1z"></path>
                 </svg>
-                Scansiona Nuovo QR Code
+                Scan New QR Code
             </a>
             
             <button onclick="window.history.back()" 
@@ -45,16 +45,16 @@
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                Torna Indietro
+                Go Back
             </button>
         </div>
 
         <!-- Help Section -->
         <div class="mt-8 pt-6 border-t border-gray-200">
             <p class="text-sm text-gray-500">
-                Hai bisogno di aiuto? 
+                Need help? 
                 <a href="/admin" class="text-blue-600 hover:text-blue-800 font-medium">
-                    Accedi al pannello amministrativo
+                    Access the admin panel
                 </a>
             </p>
         </div>

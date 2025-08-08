@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
@@ -19,28 +18,22 @@ export default defineConfig({
                 'resources/views/livewire/**/*.blade.php',
                 // Filament resources
                 'app/Filament/**/*.php',
-                'resources/views/filament/**/*.blade.php',
-                // Configuration files
-                'config/livewire.php',
-                'config/filament.php',
+                // JavaScript files
+                'resources/js/**/*.js',
             ],
-            // Enable HMR for Livewire components
-            detectTls: false,
-        }),
-        vue({
-            template: {
-                transformAssetUrls: {
-                    base: null,
-                    includeAbsolute: false,
-                },
-            },
         }),
         tailwindcss(),
     ],
     resolve: {
         alias: {
             '@': '/resources/js',
-            '~': '/resources',
+        },
+    },
+    server: {
+        host: '0.0.0.0',
+        port: 5173,
+        hmr: {
+            host: 'localhost',
         },
     },
     optimizeDeps: {
@@ -50,9 +43,6 @@ export default defineConfig({
             '@alpinejs/persist',
             '@alpinejs/collapse',
         ],
-        exclude: [
-            'vue',
-        ],
     },
     build: {
         // Optimize for Filament/Livewire
@@ -60,31 +50,28 @@ export default defineConfig({
             output: {
                 manualChunks: {
                     // Separate Alpine.js into its own chunk for better caching
-                    alpine: ['alpinejs'],
+                    alpine: ['alpinejs', '@alpinejs/focus', '@alpinejs/persist', '@alpinejs/collapse'],
                     // Separate vendor libraries
                     vendor: ['axios'],
                 },
             },
         },
-        // Enable source maps for development
-        sourcemap: process.env.NODE_ENV === 'development',
-        // Optimize chunk size
+        // Optimize chunk size for better performance
         chunkSizeWarningLimit: 1000,
+        // Enable source maps for debugging in development
+        sourcemap: process.env.NODE_ENV === 'development',
+        // Optimize CSS
+        cssCodeSplit: true,
+        // Enable minification
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: process.env.NODE_ENV === 'production',
+                drop_debugger: process.env.NODE_ENV === 'production',
+            },
+        },
     },
-    server: {
-        // Enhanced HMR configuration for Livewire
-        hmr: {
-            host: 'localhost',
-        },
-        // Watch additional files for changes
-        watch: {
-            usePolling: false,
-            ignored: [
-                '**/node_modules/**',
-                '**/vendor/**',
-                '**/storage/**',
-                '**/bootstrap/cache/**',
-            ],
-        },
+    css: {
+        devSourcemap: true,
     },
 });

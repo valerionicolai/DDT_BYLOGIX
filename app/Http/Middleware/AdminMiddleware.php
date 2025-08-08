@@ -21,7 +21,7 @@ class AdminMiddleware
         if (!Auth::check()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Non autenticato. Accesso negato.',
+                'message' => 'Not authenticated. Access denied.',
                 'error' => 'Unauthenticated'
             ], 401);
         }
@@ -30,7 +30,7 @@ class AdminMiddleware
         if (!Auth::user()->isAdmin()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Accesso negato. Sono richiesti privilegi di amministratore.',
+                'message' => 'Access denied. Administrator privileges required.',
                 'error' => 'Insufficient privileges'
             ], 403);
         }

@@ -27,7 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
-            ->brandName('DTT by Logix')
+            ->brandName('DDT by Logix')
             ->favicon('/favicon.ico')
             ->colors([
                 'primary' => Color::Blue,

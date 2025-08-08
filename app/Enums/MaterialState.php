@@ -14,9 +14,9 @@ enum MaterialState: string
     public function getLabel(): string
     {
         return match($this) {
-            self::DA_CONSERVARE => 'Da Conservare',
-            self::DA_TRATTENERE => 'Da Trattenere',
-            self::DA_RESTITUIRE => 'Da Restituire',
+            self::DA_CONSERVARE => 'To Keep',
+            self::DA_TRATTENERE => 'To Hold',
+            self::DA_RESTITUIRE => 'To Return',
         };
     }
 

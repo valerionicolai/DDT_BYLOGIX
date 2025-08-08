@@ -4,12 +4,6 @@ import focus from '@alpinejs/focus';
 import persist from '@alpinejs/persist';
 import collapse from '@alpinejs/collapse';
 
-// Import Vue.js components for existing functionality
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
-import App from './components/App.vue';
-import router from './router';
-
 // Register Alpine.js plugins
 Alpine.plugin(focus);
 Alpine.plugin(persist);
@@ -71,23 +65,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 const token = document.head.querySelector('meta[name="csrf-token"]');
 if (token) {
     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
-}
-
-// Initialize Vue.js app only if the #app element exists (for existing Vue components)
-const appElement = document.getElementById('app');
-if (appElement) {
-    // Crea l'applicazione Vue
-    const app = createApp(App);
-
-    // Crea e configura Pinia
-    const pinia = createPinia();
-
-    // Usa Pinia e il router
-    app.use(pinia);
-    app.use(router);
-
-    // Monta l'applicazione
-    app.mount('#app');
 }
 
 // Hot Module Replacement (HMR) support for Livewire components

@@ -39,15 +39,15 @@ enum ProjectState: string
     public function label(): string
     {
         return match($this) {
-            self::DRAFT => 'Bozza',
-            self::PLANNING => 'Pianificazione',
-            self::ACTIVE => 'Attivo',
-            self::IN_PROGRESS => 'In Corso',
-            self::ON_HOLD => 'In Pausa',
-            self::REVIEW => 'In Revisione',
-            self::COMPLETED => 'Completato',
-            self::CANCELLED => 'Annullato',
-            self::ARCHIVED => 'Archiviato',
+            self::DRAFT => 'Draft',
+            self::PLANNING => 'Planning',
+            self::ACTIVE => 'Active',
+            self::IN_PROGRESS => 'In Progress',
+            self::ON_HOLD => 'On Hold',
+            self::REVIEW => 'Under Review',
+            self::COMPLETED => 'Completed',
+            self::CANCELLED => 'Cancelled',
+            self::ARCHIVED => 'Archived',
         };
     }
 

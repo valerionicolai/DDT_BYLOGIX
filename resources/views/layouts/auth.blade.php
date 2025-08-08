@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'DTT Management System') }}</title>
+    <title>{{ config('app.name', 'DDT Management System') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -30,7 +30,7 @@
                     <div class="flex">
                         <div class="flex-shrink-0 flex items-center">
                             <a href="/" class="text-xl font-bold text-gray-900">
-                                DTT Management
+                                DDT Management
                             </a>
                         </div>
                         
@@ -121,7 +121,7 @@
         <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center">
                 <div class="text-sm text-gray-500">
-                    © {{ date('Y') }} DTT Management System. All rights reserved.
+                    © {{ date('Y') }} DDT Management System. All rights reserved.
                 </div>
                 <div class="flex space-x-6">
                     <a href="#" class="text-sm text-gray-500 hover:text-gray-900">Privacy Policy</a>

@@ -10,7 +10,7 @@
                 Sign in to your account
             </h2>
             <p class="mt-2 text-center text-sm text-gray-600">
-                Access the DTT Management System
+                Access the DDT Management System
             </p>
         </div>
 

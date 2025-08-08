@@ -1,6 +1,6 @@
 @extends('public.layout')
 
-@section('title', 'Documento: ' . $document->name)
+@section('title', 'Document: ' . $document->name)
 
 @section('content')
 <div class="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -9,7 +9,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-white">{{ $document->name }}</h1>
-                <p class="text-green-100 mt-1">Documento ID: #{{ $document->id }}</p>
+                <p class="text-green-100 mt-1">Document ID: #{{ $document->id }}</p>
             </div>
             <div class="text-right">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
@@ -24,45 +24,45 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Document Information -->
             <div>
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Informazioni Documento</h2>
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Document Information</h2>
                 
                 <dl class="space-y-4">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Nome</dt>
+                        <dt class="text-sm font-medium text-gray-500">Name</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $document->name }}</dd>
                     </div>
                     
                     @if($document->description)
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Descrizione</dt>
+                        <dt class="text-sm font-medium text-gray-500">Description</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $document->description }}</dd>
                     </div>
                     @endif
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Tipo Documento</dt>
+                        <dt class="text-sm font-medium text-gray-500">Document Type</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $document->documentType->name }}</dd>
                     </div>
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Categoria</dt>
+                        <dt class="text-sm font-medium text-gray-500">Category</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $document->documentCategory->name }}</dd>
                     </div>
                     
                     @if($document->barcode)
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Codice a Barre</dt>
+                        <dt class="text-sm font-medium text-gray-500">Barcode</dt>
                         <dd class="mt-1 text-sm text-gray-900 font-mono">{{ $document->barcode }}</dd>
                     </div>
                     @endif
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Creato il</dt>
+                        <dt class="text-sm font-medium text-gray-500">Created on</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $document->created_at->format('d/m/Y H:i') }}</dd>
                     </div>
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Ultimo aggiornamento</dt>
+                        <dt class="text-sm font-medium text-gray-500">Last updated</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $document->updated_at->format('d/m/Y H:i') }}</dd>
                     </div>
                 </dl>
@@ -73,15 +73,15 @@
                 <!-- Project Information -->
                 @if($document->project)
                 <div class="mb-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Progetto Associato</h2>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Associated Project</h2>
                     <div class="bg-blue-50 rounded-lg p-4">
                         <div class="space-y-2">
                             <p class="text-sm">
-                                <span class="font-medium">Nome:</span> {{ $document->project->name }}
+                                <span class="font-medium">Name:</span> {{ $document->project->name }}
                             </p>
                             @if($document->project->description)
                             <p class="text-sm">
-                                <span class="font-medium">Descrizione:</span> 
+                                <span class="font-medium">Description:</span> 
                                 {{ Str::limit($document->project->description, 150) }}
                             </p>
                             @endif
@@ -94,7 +94,7 @@
                 @if($document->materials->count() > 0)
                 <div>
                     <h2 class="text-lg font-semibold text-gray-900 mb-4">
-                        Materiali Associati ({{ $document->materials->count() }})
+                        Associated Materials ({{ $document->materials->count() }})
                     </h2>
                     <div class="space-y-3">
                         @foreach($document->materials as $material)
@@ -130,12 +130,12 @@
                 </div>
                 @else
                 <div>
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Materiali Associati</h2>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Associated Materials</h2>
                     <div class="bg-gray-50 rounded-lg p-6 text-center">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
                         </svg>
-                        <p class="mt-2 text-sm text-gray-500">Nessun materiale associato a questo documento</p>
+                        <p class="mt-2 text-sm text-gray-500">No materials associated with this document</p>
                     </div>
                 </div>
                 @endif
@@ -151,7 +151,7 @@
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                Indietro
+                Back
             </button>
             
             <div class="flex space-x-3">
@@ -160,7 +160,7 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                     </svg>
-                    Stampa
+                    Print
                 </button>
                 
                 <a href="{{ route('public.scanner') }}" 
@@ -168,7 +168,7 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V6a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1z"></path>
                     </svg>
-                    Scansiona Altro
+                    Scan Another
                 </a>
             </div>
         </div>

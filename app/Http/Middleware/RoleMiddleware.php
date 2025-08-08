@@ -21,7 +21,7 @@ class RoleMiddleware
         if (!Auth::check()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Non autenticato. Accesso negato.',
+                'message' => 'Not authenticated. Access denied.',
                 'error' => 'Unauthenticated'
             ], 401);
         }
@@ -37,7 +37,7 @@ class RoleMiddleware
         if (!$user->hasAnyRole($roles)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Accesso negato. Non hai i privilegi necessari per accedere a questa risorsa.',
+                'message' => 'Access denied. You do not have the necessary privileges to access this resource.',
                 'error' => 'Insufficient privileges',
                 'required_roles' => $roles,
                 'user_role' => $user->role
