@@ -11,12 +11,31 @@ use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Image\Enums\Fit;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Material extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\MaterialFactory> */
-    use HasFactory;
-    use InteractsWithMedia;
+    /** @use HasFactory<\\Database\\Factories\\MaterialFactory> */
+    use HasFactory, InteractsWithMedia, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('audit')
+            ->logOnly([
+                'document_id',
+                'material_type_id',
+                'description',
+                'state',
+                'due_date',
+                'barcode',
+                'quantity',
+                'location',
+            ])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     protected $fillable = [
         'document_id',

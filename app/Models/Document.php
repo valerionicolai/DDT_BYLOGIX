@@ -8,11 +8,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Document extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('audit')
+            ->logOnly(['title','description','document_type_id','document_category_id','client_id','project_id','status','barcode','file_path','created_date','due_date'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+    
+    
     /**
      * The "booted" method of the model.
      */
