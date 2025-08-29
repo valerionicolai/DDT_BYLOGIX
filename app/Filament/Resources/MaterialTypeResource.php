@@ -41,8 +41,8 @@ class MaterialTypeResource extends Resource
                 Forms\Components\Select::make('status')
                     ->required()
                     ->options([
-                        'active' => 'Attivo',
-                        'inactive' => 'Inattivo',
+                        'active' => 'Active',
+                        'inactive' => 'Inactive',
                     ])
                     ->default('active')
                     ->native(false),
@@ -68,8 +68,8 @@ class MaterialTypeResource extends Resource
                         'danger' => 'inactive',
                     ])
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'active' => 'Attivo',
-                        'inactive' => 'Inattivo',
+                        'active' => 'Active',
+                        'inactive' => 'Inactive',
                         default => $state,
                     })
                     ->searchable(),
@@ -85,10 +85,10 @@ class MaterialTypeResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'active' => 'Attivo',
-                        'inactive' => 'Inattivo',
+                        'active' => 'Active',
+                        'inactive' => 'Inactive',
                     ])
-                    ->label('Stato'),
+                    ->label('Status'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

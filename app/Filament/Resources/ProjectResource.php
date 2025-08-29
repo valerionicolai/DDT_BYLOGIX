@@ -2,148 +2,81 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProjectResource\Pages;
-use App\Filament\Resources\ProjectResource\RelationManagers;
-use App\Models\Project;
-use App\Enums\ProjectState;
 use App\Enums\ProjectPriority;
+use App\Enums\ProjectState;
+use App\Filament\Resources\ProjectResource\Pages;
+use App\Filament\Resources\ProjectResource\RelationManagers\DocumentsRelationManager;
+use App\Models\Client;
+use App\Models\Project;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Auth;
 
 class ProjectResource extends Resource
 {
     protected static ?string $model = Project::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-briefcase';
     
-    protected static ?string $navigationLabel = 'Progetti';
-    
-    protected static ?string $modelLabel = 'Progetto';
-    
-    protected static ?string $pluralModelLabel = 'Progetti';
-    
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                // Sezione 1: Informazioni Progetto
-                Forms\Components\Section::make('Informazioni Progetto')
-                    ->description('Dettagli base del progetto')
-                    ->collapsible()
+                Section::make('Project Information')
                     ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->label('Nome Progetto')
-                            ->required()
-                            ->columnSpan(2),
-                        Forms\Components\Textarea::make('description')
-                            ->label('Descrizione')
-                            ->columnSpanFull(),
-                        Forms\Components\Select::make('client_id')
-                            ->label('Cliente')
-                            ->relationship('client', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-                        Forms\Components\Select::make('user_id')
-                            ->label('Project Manager')
-                            ->relationship('user', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->default(fn () => Auth::id())
-                            ->required(),
-                    ])
-                    ->columns(2),
-
-                // Sezione 2: Stato e Priorità
-                Forms\Components\Section::make('Stato e Priorità')
-                    ->description('Gestione stato e priorità del progetto')
-                    ->collapsible()
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('name')->required()->maxLength(255),
+                                Select::make('client_id')->label('Client')->options(Client::all()->pluck('name','id'))->searchable()->required(),
+                            ]),
+                        Textarea::make('description')->rows(3)->columnSpanFull(),
+                    ]),
+                Section::make('Status & Priority')
                     ->schema([
-                        Forms\Components\Select::make('status')
-                            ->label('Stato')
-                            ->options(ProjectState::options())
-                            ->default(ProjectState::DRAFT->value)
-                            ->required()
-                            ->native(false),
-                        Forms\Components\Select::make('priority')
-                            ->label('Priorità')
-                            ->options(ProjectPriority::options())
-                            ->default(ProjectPriority::MEDIUM->value)
-                            ->required()
-                            ->native(false),
-                        Forms\Components\TextInput::make('progress_percentage')
-                            ->label('Progresso (%)')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->maxValue(100)
-                            ->suffix('%')
-                            ->required(),
-                    ])
-                    ->columns(3),
-
-                // Sezione 3: Date e Scadenze
-                Forms\Components\Section::make('Date e Scadenze')
-                    ->description('Pianificazione temporale del progetto')
-                    ->collapsible()
+                        Grid::make(2)
+                            ->schema([
+                                Select::make('status')->options(collect(ProjectState::cases())->mapWithKeys(fn($c)=>[$c->value=>$c->label()]))->required(),
+                                Select::make('priority')->options(collect(ProjectPriority::cases())->mapWithKeys(fn($c)=>[$c->value=>$c->label()]))->required(),
+                            ]),
+                    ]),
+                Section::make('Dates')
                     ->schema([
-                        Forms\Components\DatePicker::make('start_date')
-                            ->label('Data Inizio')
-                            ->native(false),
-                        Forms\Components\DatePicker::make('end_date')
-                            ->label('Data Fine')
-                            ->native(false),
-                        Forms\Components\DatePicker::make('deadline')
-                            ->label('Scadenza')
-                            ->native(false),
-                    ])
-                    ->columns(3),
-
-                // Sezione 4: Budget e Costi
-                Forms\Components\Section::make('Budget e Costi')
-                    ->description('Gestione economica del progetto')
-                    ->collapsible()
+                        Grid::make(3)
+                            ->schema([
+                                DatePicker::make('start_date'),
+                                DatePicker::make('end_date'),
+                                DatePicker::make('deadline'),
+                            ]),
+                    ]),
+                Section::make('Budget')
                     ->schema([
-                        Forms\Components\TextInput::make('budget')
-                            ->label('Budget')
-                            ->numeric()
-                            ->prefix('€')
-                            ->step(0.01),
-                        Forms\Components\TextInput::make('estimated_cost')
-                            ->label('Costo Stimato')
-                            ->numeric()
-                            ->prefix('€')
-                            ->step(0.01),
-                        Forms\Components\TextInput::make('actual_cost')
-                            ->label('Costo Effettivo')
-                            ->numeric()
-                            ->prefix('€')
-                            ->step(0.01),
-                    ])
-                    ->columns(3),
-
-                // Sezione 5: Note e Metadati
-                Forms\Components\Section::make('Note e Metadati')
-                    ->description('Informazioni aggiuntive')
-                    ->collapsible()
-                    ->collapsed()
+                        Grid::make(3)
+                            ->schema([
+                                TextInput::make('budget')->numeric()->prefix('€'),
+                                TextInput::make('estimated_cost')->numeric()->prefix('€'),
+                                TextInput::make('actual_cost')->numeric()->prefix('€'),
+                            ]),
+                    ]),
+                Section::make('Notes & Metadata')
                     ->schema([
-                        Forms\Components\Textarea::make('notes')
-                            ->label('Note')
-                            ->rows(3)
-                            ->columnSpanFull(),
-                        Forms\Components\Textarea::make('metadata')
-                            ->label('Metadati (JSON)')
-                            ->rows(3)
-                            ->columnSpanFull(),
+                        Textarea::make('notes')->rows(3)->columnSpanFull(),
                     ]),
             ]);
     }
@@ -151,202 +84,47 @@ class ProjectResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordUrl(
-                fn (Project $record): string => Pages\ViewProject::getUrl([$record]),
-            )
-            ->defaultSort('created_at', 'desc')
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['client', 'user']))
-            ->searchable()
-            ->searchOnBlur()
-            ->striped()
-            ->paginated([10, 25, 50, 100])
             ->columns([
-                // Informazioni Base
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Nome Progetto')
+                TextColumn::make('name')
+                    ->label('Project Name')
                     ->searchable()
-                    ->sortable()
-                    ->weight('medium'),
-                
-                Tables\Columns\TextColumn::make('client.name')
-                    ->label('Cliente')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
-                
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Project Manager')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
-
-                // Stato e Priorità con Badge
-                Tables\Columns\BadgeColumn::make('status')
-                    ->label('Stato')
-                    ->formatStateUsing(fn (ProjectState $state): string => $state->label())
-                    ->colors([
-                        'gray' => ProjectState::DRAFT->value,
-                        'blue' => ProjectState::PLANNING->value,
-                        'success' => ProjectState::ACTIVE->value,
-                        'indigo' => ProjectState::IN_PROGRESS->value,
-                        'warning' => ProjectState::ON_HOLD->value,
-                        'purple' => ProjectState::REVIEW->value,
-                        'emerald' => ProjectState::COMPLETED->value,
-                        'danger' => ProjectState::CANCELLED->value,
-                        'slate' => ProjectState::ARCHIVED->value,
-                    ])
-                    ->icons([
-                        'heroicon-o-document' => ProjectState::DRAFT->value,
-                        'heroicon-o-clipboard-document-list' => ProjectState::PLANNING->value,
-                        'heroicon-o-play' => ProjectState::ACTIVE->value,
-                        'heroicon-o-arrow-path' => ProjectState::IN_PROGRESS->value,
-                        'heroicon-o-pause' => ProjectState::ON_HOLD->value,
-                        'heroicon-o-eye' => ProjectState::REVIEW->value,
-                        'heroicon-o-check-circle' => ProjectState::COMPLETED->value,
-                        'heroicon-o-x-circle' => ProjectState::CANCELLED->value,
-                        'heroicon-o-archive-box' => ProjectState::ARCHIVED->value,
-                    ])
                     ->sortable(),
-
-                Tables\Columns\BadgeColumn::make('priority')
-                    ->label('Priorità')
-                    ->formatStateUsing(fn (ProjectPriority $state): string => $state->label())
-                    ->colors([
-                        'success' => ProjectPriority::LOW->value,
-                        'primary' => ProjectPriority::MEDIUM->value,
-                        'warning' => ProjectPriority::HIGH->value,
-                        'orange' => ProjectPriority::URGENT->value,
-                        'danger' => ProjectPriority::CRITICAL->value,
-                    ])
+                TextColumn::make('client.company')
+                    ->label('Client/Supplier')
+                    ->searchable()
+                    ->sortable()
+                    ->formatStateUsing(fn ($state, $record) => $state ?: $record->client?->name ?: '-'),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->formatStateUsing(fn ($state) => ($enum = $state instanceof \App\Enums\ProjectState ? $state : (is_string($state) ? \App\Enums\ProjectState::tryFrom($state) : null))?->label() ?? (string) $state)
+                    ->badge()
+                    ->color(fn ($state) => ($enum = $state instanceof \App\Enums\ProjectState ? $state : (is_string($state) ? \App\Enums\ProjectState::tryFrom($state) : null))?->color() ?? 'gray')
+                    ->icon(fn ($state) => ($enum = $state instanceof \App\Enums\ProjectState ? $state : (is_string($state) ? \App\Enums\ProjectState::tryFrom($state) : null))?->icon() ?? 'heroicon-m-question-mark-circle'),
+                TextColumn::make('priority')
+                    ->label('Priority')
+                    ->formatStateUsing(fn ($state) => ($enum = $state instanceof \App\Enums\ProjectPriority ? $state : (is_string($state) ? \App\Enums\ProjectPriority::tryFrom($state) : null))?->label() ?? (string) $state)
+                    ->badge()
+                    ->color(fn ($state) => ($enum = $state instanceof \App\Enums\ProjectPriority ? $state : (is_string($state) ? \App\Enums\ProjectPriority::tryFrom($state) : null))?->color() ?? 'gray')
+                    ->icon(fn ($state) => ($enum = $state instanceof \App\Enums\ProjectPriority ? $state : (is_string($state) ? \App\Enums\ProjectPriority::tryFrom($state) : null))?->icon() ?? 'heroicon-m-flag'),
+                TextColumn::make('documents_count')
+                    ->label('Documents')
+                    ->counts('documents')
+                    ->badge()
+                    ->color('info')
+                    ->icon('heroicon-o-document')
                     ->sortable(),
-
-                // Progresso
-                Tables\Columns\TextColumn::make('progress_percentage')
-                    ->label('Progresso')
-                    ->formatStateUsing(fn (int $state): string => $state . '%')
-                    ->sortable()
-                    ->toggleable(),
-
-                // Date
-                Tables\Columns\TextColumn::make('deadline')
-                    ->label('Scadenza')
-                    ->date('d/m/Y')
-                    ->sortable()
-                    ->color(fn (Project $record): string => $record->is_overdue ? 'danger' : 'gray'),
-
-                Tables\Columns\TextColumn::make('start_date')
-                    ->label('Inizio')
-                    ->date('d/m/Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\TextColumn::make('end_date')
-                    ->label('Fine')
-                    ->date('d/m/Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                // Budget
-                Tables\Columns\TextColumn::make('budget')
-                    ->label('Budget')
-                    ->money('EUR')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\TextColumn::make('estimated_cost')
-                    ->label('Costo Stimato')
-                    ->money('EUR')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\TextColumn::make('actual_cost')
-                    ->label('Costo Effettivo')
-                    ->money('EUR')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                // Timestamp
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Creato')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Aggiornato')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('materials_count')
+                    ->label('Materials')
+                    ->counts('materials')
+                    ->badge()
+                    ->color('success')
+                    ->icon('heroicon-o-cube')
+                    ->sortable(),
             ])
             ->filters([
-                // Filtro Stato
-                Tables\Filters\SelectFilter::make('status')
-                    ->label('Stato')
-                    ->options(ProjectState::options())
-                    ->native(false)
-                    ->multiple(),
-
-                // Filtro Priorità
-                Tables\Filters\SelectFilter::make('priority')
-                    ->label('Priorità')
-                    ->options(ProjectPriority::options())
-                    ->native(false)
-                    ->multiple(),
-
-                // Filtro Cliente
-                Tables\Filters\SelectFilter::make('client')
-                    ->label('Cliente')
-                    ->relationship('client', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->multiple(),
-
-                // Filtro Project Manager
-                Tables\Filters\SelectFilter::make('user')
-                    ->label('Project Manager')
-                    ->relationship('user', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->multiple(),
-
-                // Filtro Progetti in Ritardo
-                Tables\Filters\Filter::make('overdue')
-                    ->label('In Ritardo')
-                    ->query(fn (Builder $query): Builder => $query->where('deadline', '<', now()))
-                    ->toggle(),
-
-                // Filtro Progetti Attivi
-                Tables\Filters\Filter::make('active_states')
-                    ->label('Solo Attivi')
-                    ->query(fn (Builder $query): Builder => 
-                        $query->whereIn('status', [
-                            ProjectState::PLANNING->value,
-                            ProjectState::ACTIVE->value,
-                            ProjectState::IN_PROGRESS->value,
-                            ProjectState::REVIEW->value,
-                        ])
-                    )
-                    ->toggle(),
-
-                // Filtro per Date
-                Tables\Filters\Filter::make('deadline_range')
-                    ->form([
-                        Forms\Components\DatePicker::make('deadline_from')
-                            ->label('Scadenza da'),
-                        Forms\Components\DatePicker::make('deadline_until')
-                            ->label('Scadenza fino'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['deadline_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('deadline', '>=', $date),
-                            )
-                            ->when(
-                                $data['deadline_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('deadline', '<=', $date),
-                            );
-                    }),
+                SelectFilter::make('status')->label('Status')->options(collect(ProjectState::cases())->mapWithKeys(fn($c)=>[$c->value=>$c->label()])),
+                SelectFilter::make('priority')->label('Priority')->options(collect(ProjectPriority::cases())->mapWithKeys(fn($c)=>[$c->value=>$c->label()])),
+                SelectFilter::make('client_id')->label('Client/Supplier')->options(Client::query()->orderBy('company')->pluck('company','id')->toArray()),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -356,13 +134,14 @@ class ProjectResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(fn (Builder $query) => $query->withCount(['documents', 'materials']));
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            DocumentsRelationManager::class,
         ];
     }
 

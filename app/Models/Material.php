@@ -8,11 +8,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Image\Enums\Fit;
 
-class Material extends Model
+class Material extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\MaterialFactory> */
     use HasFactory;
+    use InteractsWithMedia;
 
     protected $fillable = [
         'document_id',
@@ -51,6 +55,31 @@ class Material extends Model
                 $material->saveQuietly();
             }
         });
+    }
+
+    // ==================== MEDIA ====================
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')
+            ->useDisk('public')
+            ->acceptsFile(function ($file) {
+                return in_array($file->mimeType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+            })
+            ->useFallbackUrl('/images/placeholder-image.svg')
+            ->useFallbackPath(public_path('images/placeholder-image.svg'));
+
+        $this->addMediaCollection('videos')
+            ->useDisk('public')
+            ->acceptsFile(function ($file) {
+                return str_starts_with($file->mimeType, 'video/');
+            });
+    }
+
+    public function registerMediaConversions(?\Spatie\MediaLibrary\MediaCollections\Models\Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->fit(Fit::Contain, 300, 300)
+            ->nonQueued();
     }
 
     // ==================== RELATIONSHIPS ====================

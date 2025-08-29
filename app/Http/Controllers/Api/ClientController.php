@@ -46,13 +46,13 @@ class ClientController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $clients,
-                'message' => 'Clienti recuperati con successo'
+                'message' => 'Clients retrieved successfully'
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero dei clienti',
+                'message' => 'Error retrieving clients',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -81,20 +81,20 @@ class ClientController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Cliente creato con successo',
+                'message' => 'Client created successfully',
                 'data' => $client
             ], 201);
 
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore di validazione',
+                'message' => 'Validation errors',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore durante la creazione del cliente',
+                'message' => 'Error creating client',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -111,18 +111,18 @@ class ClientController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $client,
-                'message' => 'Cliente recuperato con successo'
+                'message' => 'Client retrieved successfully'
             ]);
 
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cliente non trovato'
+                'message' => 'Client not found'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero del cliente',
+                'message' => 'Error retrieving client',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -153,25 +153,25 @@ class ClientController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Cliente aggiornato con successo',
+                'message' => 'Client updated successfully',
                 'data' => $client->fresh()
             ]);
 
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cliente non trovato'
+                'message' => 'Client not found'
             ], 404);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore di validazione',
+                'message' => 'Validation errors',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore durante l\'aggiornamento del cliente',
+                'message' => 'Error updating client',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -189,7 +189,7 @@ class ClientController extends Controller
             if ($client->projects()->count() > 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Impossibile eliminare il cliente: ha progetti associati'
+                    'message' => 'Cannot delete client: it has associated projects'
                 ], 409);
             }
 
@@ -197,18 +197,18 @@ class ClientController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Cliente eliminato con successo'
+                'message' => 'Client deleted successfully'
             ]);
 
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cliente non trovato'
+                'message' => 'Client not found'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nell\'eliminazione del cliente',
+                'message' => 'Error deleting client',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -232,13 +232,13 @@ class ClientController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $stats,
-                'message' => 'Statistiche clienti recuperate con successo'
+                'message' => 'Client statistics retrieved successfully'
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero delle statistiche',
+                'message' => 'Error retrieving statistics',
                 'error' => $e->getMessage()
             ], 500);
         }

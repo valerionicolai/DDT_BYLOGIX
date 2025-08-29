@@ -306,19 +306,19 @@ class DocumentController extends Controller
         // CSV Headers
         $headers = [
             'ID',
-            'Titolo',
-            'Descrizione',
-            'Categoria',
-            'Fornitore',
-            'Codice a Barre',
-            'Stato',
-            'Nome File',
-            'Dimensione File',
-            'Tipo File',
-            'Data Creazione',
-            'Data Scadenza',
-            'Creato il',
-            'Aggiornato il'
+            'Title',
+            'Description',
+            'Category',
+            'Supplier',
+            'Barcode',
+            'Status',
+            'File Name',
+            'File Size',
+            'File Type',
+            'Created Date',
+            'Due Date',
+            'Created at',
+            'Updated at'
         ];
         
         $csvContent .= implode(',', array_map(function($header) {

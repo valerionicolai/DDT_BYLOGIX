@@ -25,106 +25,104 @@ class ClientResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
     
-    protected static ?string $navigationLabel = 'Anagrafica Clienti/Fornitori';
+    protected static ?string $navigationLabel = 'Clients/Suppliers';
     
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 5;
     
-    protected static ?string $modelLabel = 'Cliente/Fornitore';
+    protected static ?string $modelLabel = 'Client/Supplier';
     
-    protected static ?string $pluralModelLabel = 'Clienti/Fornitori';
+    protected static ?string $pluralModelLabel = 'Clients/Suppliers';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Informazioni Azienda')
+                Forms\Components\Section::make('Company Information')
                     ->schema([
                         Forms\Components\TextInput::make('company')
-                            ->label('Azienda')
+                            ->label('Company')
                             ->required()
                             ->columnSpanFull(),
                         Forms\Components\Select::make('type')
-                            ->label('Tipo')
+                            ->label('Type')
                             ->options([
-                                ClientType::CLIENTE->value => '👤 Cliente',
-                                ClientType::FORNITORE->value => '🏢 Fornitore',
+                                ClientType::CLIENTE->value => '👤 Client',
+                                ClientType::FORNITORE->value => '🏢 Supplier',
                             ])
                             ->default(ClientType::CLIENTE->value)
                             ->required()
                             ->live()
                             ->columnSpan(1),
                         Forms\Components\TextInput::make('vat_number')
-                            ->label('Partita IVA / VAT')
+                            ->label('VAT Number')
                             ->columnSpan(1),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Referenti')
+                Forms\Components\Section::make('Contacts')
                     ->schema([
                         Forms\Components\Repeater::make('contacts')
                             ->relationship('contacts')
                             ->schema([
                                 Forms\Components\TextInput::make('name')
-                                    ->label('Nome Referente')
+                                    ->label('Contact Name')
                                     ->required()
                                     ->columnSpan(2),
                                 Forms\Components\TextInput::make('area_role')
-                                    ->label('Area/Ruolo')
-                                    ->placeholder('es. Commerciale, Tecnico, Amministrativo...')
+                                    ->label('Role/Department')
+                                    ->placeholder('e.g. Sales, Technical, Administration...')
                                     ->columnSpan(2),
                                 Forms\Components\TextInput::make('email')
                                     ->label('Email')
                                     ->email()
                                     ->columnSpan(2),
                                 Forms\Components\TextInput::make('phone')
-                                    ->label('Telefono')
+                                    ->label('Phone')
                                     ->tel()
                                     ->columnSpan(1),
                                 Forms\Components\Toggle::make('is_primary')
-                                    ->label('Referente Principale')
+                                    ->label('Primary Contact')
                                     ->columnSpan(1),
                             ])
                             ->columns(4)
                             ->defaultItems(1)
-                            ->addActionLabel('Aggiungi Referente')
+                            ->addActionLabel('Add Contact')
                             ->reorderableWithButtons()
                             ->collapsible()
-                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? 'Nuovo Referente'),
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? 'New Contact'),
                     ]),
 
-                Forms\Components\Section::make('Informazioni Generali (Referente Principale)')
+                Forms\Components\Section::make('General Information (Primary Contact)')
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Referente Principale (legacy)')
-                            ->helperText('Questo campo è mantenuto per compatibilità. Utilizzare la sezione Referenti sopra.')
+                            ->label('Primary Contact (legacy)')
+                            ->helperText('This field is kept for compatibility. Please use the Contacts section above.')
                             ->columnSpan(1),
                         Forms\Components\TextInput::make('email')
-                            ->label('Email Principale (legacy)')
-                            ->email()
-                            ->helperText('Questo campo è mantenuto per compatibilità. Utilizzare la sezione Referenti sopra.')
+                            ->label('Primary Email (legacy)')
+                            ->helperText('This field is kept for compatibility. Please use the Contacts section above.')
                             ->columnSpan(1),
                         Forms\Components\TextInput::make('phone')
-                            ->label('Telefono Principale (legacy)')
-                            ->tel()
-                            ->helperText('Questo campo è mantenuto per compatibilità. Utilizzare la sezione Referenti sopra.')
+                            ->label('Primary Phone (legacy)')
+                            ->helperText('This field is kept for compatibility. Please use the Contacts section above.')
                             ->columnSpan(1),
                     ])
                     ->columns(2)
                     ->collapsed(),
                 
-                Forms\Components\Section::make('Indirizzo')
+                Forms\Components\Section::make('Address')
                     ->schema([
                         Forms\Components\Textarea::make('address')
-                            ->label('Indirizzo')
+                            ->label('Address')
                             ->columnSpanFull(),
                         Forms\Components\TextInput::make('city')
-                            ->label('Città')
+                            ->label('City')
                             ->columnSpan(1),
                         Forms\Components\TextInput::make('postal_code')
-                            ->label('CAP')
+                            ->label('Postal Code')
                             ->columnSpan(1),
                         Forms\Components\Select::make('country')
-                            ->label('Paese')
+                            ->label('Country')
                             ->options(CountryService::getCountriesSorted())
                             ->searchable()
                             ->default('IT')
@@ -132,13 +130,13 @@ class ClientResource extends Resource
                     ])
                     ->columns(2),
                 
-                Forms\Components\Section::make('Altro')
+                Forms\Components\Section::make('Other')
                     ->schema([
                         Forms\Components\Textarea::make('notes')
-                            ->label('Note')
+                            ->label('Notes')
                             ->columnSpanFull(),
                         Forms\Components\Select::make('status')
-                            ->label('Stato')
+                            ->label('Status')
                             ->options(ClientStatus::options())
                             ->default(ClientStatus::PROSPECT->value)
                             ->required(),
@@ -154,22 +152,22 @@ class ClientResource extends Resource
             )
             ->columns([
                 Tables\Columns\TextColumn::make('company')
-                    ->label('Azienda')
+                    ->label('Company')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
                 Tables\Columns\BadgeColumn::make('type')
-                    ->label('Tipo')
+                    ->label('Type')
                     ->formatStateUsing(fn ($state) => $state->getLabel())
                     ->color(fn ($state) => $state->getColor())
                     ->icon(fn ($state) => $state->getIcon())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('contacts.name')
-                    ->label('Referenti')
+                    ->label('Contacts')
                     ->formatStateUsing(function ($record) {
                         $contacts = $record->contacts;
                         if ($contacts->isEmpty()) {
-                            return $record->name ? "📧 {$record->name}" : 'Nessun referente';
+                            return $record->name ? "📧 {$record->name}" : 'No contacts';
                         }
                         return $contacts->map(function ($contact) {
                             $role = $contact->area_role ? " ({$contact->area_role})" : '';
@@ -180,67 +178,67 @@ class ClientResource extends Resource
                     ->searchable()
                     ->wrap(),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Referente Legacy')
+                    ->label('Legacy Contact')
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Email Legacy')
+                    ->label('Legacy Email')
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('vat_number')
-                    ->label('P.IVA')
+                    ->label('VAT Number')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
-                    ->label('Telefono')
+                    ->label('Phone')
                     ->searchable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('city')
-                    ->label('Città')
+                    ->label('City')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('country')
-                    ->label('Paese')
+                    ->label('Country')
                     ->formatStateUsing(fn ($state) => CountryService::getCountryName($state))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\BadgeColumn::make('status')
-                    ->label('Stato')
+                    ->label('Status')
                     ->formatStateUsing(fn ($state) => $state->getLabel())
                     ->color(fn ($state) => $state->getColor())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Creato il')
+                    ->label('Created at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Aggiornato il')
+                    ->label('Updated at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
-                    ->label('Tipo')
+                    ->label('Type')
                     ->options(ClientType::options()),
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Stato')
+                    ->label('Status')
                     ->options(ClientStatus::options()),
                 Tables\Filters\SelectFilter::make('country')
-                    ->label('Paese')
+                    ->label('Country')
                     ->options(CountryService::getCountriesSorted())
                     ->searchable(),
                 Tables\Filters\Filter::make('active_clients')
-                    ->label('Solo Clienti Attivi')
+                    ->label('Active Clients Only')
                     ->query(fn (Builder $query): Builder => $query->active()),
                 
                 Tables\Filters\Filter::make('business_clients')
-                    ->label('Clienti per Business')
+                    ->label('Business Clients')
                     ->query(fn (Builder $query): Builder => $query->whereIn('status', [
                         ClientStatus::ACTIVE,
                         ClientStatus::PROSPECT
@@ -248,11 +246,11 @@ class ClientResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('change_status')
-                    ->label('Cambia Stato')
+                    ->label('Change Status')
                     ->icon('heroicon-o-arrow-path')
                     ->form([
                         Forms\Components\Select::make('new_status')
-                            ->label('Nuovo Stato')
+                            ->label('New Status')
                             ->options(function (Client $record) {
                                 $service = app(ClientStatusService::class);
                                 $validTransitions = $service->getValidTransitions($record);
@@ -265,7 +263,7 @@ class ClientResource extends Resource
                             ->required(),
                         
                         Forms\Components\Textarea::make('reason')
-                            ->label('Motivo (opzionale)')
+                            ->label('Reason (optional)')
                             ->rows(3),
                     ])
                     ->action(function (array $data, Client $record): void {
@@ -274,12 +272,12 @@ class ClientResource extends Resource
                         
                         if ($service->transitionClient($record, $newStatus, $data['reason'] ?? null)) {
                             Notification::make()
-                                ->title('Stato aggiornato con successo')
+                                ->title('Status updated successfully')
                                 ->success()
                                 ->send();
                         } else {
                             Notification::make()
-                                ->title('Errore nell\'aggiornamento dello stato')
+                                ->title('Error updating status')
                                 ->danger()
                                 ->send();
                         }

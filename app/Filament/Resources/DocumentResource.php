@@ -24,12 +24,81 @@ class DocumentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 3;
+    
+    protected static ?string $navigationLabel = 'Documents';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Forms\Components\Section::make('File Information')
+                    ->schema([
+                        Forms\Components\Select::make('client_id')
+                            ->label('Supplier (Client)')
+                            ->relationship('client', 'name')
+                            ->options(Client::active()->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->default(fn () => request()->query('client_id') ? (int) request()->query('client_id') : null)
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('email')
+                                    ->email()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('phone')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('company')
+                                    ->maxLength(255),
+                                Forms\Components\Textarea::make('address')
+                                    ->maxLength(500),
+                                Forms\Components\TextInput::make('city')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('postal_code')
+                                    ->maxLength(20),
+                                Forms\Components\TextInput::make('country')
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('status')
+                                    ->options([
+                                        'active' => 'Active',
+                                        'inactive' => 'Inactive',
+                                    ])
+                                    ->default('active'),
+                            ]),
+                        
+                        Forms\Components\FileUpload::make('file_path')
+                            ->label('Document Attachment')
+                            ->disk('public')
+                            ->directory('documents')
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                                $extension = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+                                $hash = substr(md5(now()->format('Y-m-d H:i:s.u')), 0, 8);
+                                return $originalName . '_' . $hash . '.' . $extension;
+                            })
+                            ->acceptedFileTypes([
+                                'application/pdf',
+                                'image/*',
+                                'text/*',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                                'application/vnd.ms-powerpoint'
+                            ])
+                            ->maxSize(20480) // 20MB
+                            ->downloadable()
+                            ->previewable()
+                            ->openable()
+                            ->deletable()
+                            ->columnSpanFull()
+                            ->helperText('Supported formats: PDF, Images, Documents (Word, Excel, PowerPoint), Text files. Maximum size: 20MB'),
+                    ])
+                    ->columns(2),
+
                 Forms\Components\Section::make('Document Information')
                     ->schema([
                         Forms\Components\TextInput::make('title')
@@ -86,72 +155,6 @@ class DocumentResource extends Resource
                             ]),
                         
 
-                    ])
-                    ->columns(2),
-
-                Forms\Components\Section::make('File Information')
-                    ->schema([
-                        Forms\Components\Select::make('client_id')
-                            ->label('Supplier (Client)')
-                            ->relationship('client', 'name')
-                            ->options(Client::active()->pluck('name', 'id'))
-                            ->searchable()
-                            ->preload()
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('email')
-                                    ->email()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('phone')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('company')
-                                    ->maxLength(255),
-                                Forms\Components\Textarea::make('address')
-                                    ->maxLength(500),
-                                Forms\Components\TextInput::make('city')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('postal_code')
-                                    ->maxLength(20),
-                                Forms\Components\TextInput::make('country')
-                                    ->maxLength(255),
-                                Forms\Components\Select::make('status')
-                                    ->options([
-                                        'active' => 'Active',
-                                        'inactive' => 'Inactive',
-                                    ])
-                                    ->default('active'),
-                            ]),
-                        
-                        Forms\Components\FileUpload::make('file_path')
-                            ->label('Document Attachment')
-                            ->disk('public')
-                            ->directory('documents')
-                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
-                                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                                $extension = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
-                                $hash = substr(md5(now()->format('Y-m-d H:i:s.u')), 0, 8);
-                                return $originalName . '_' . $hash . '.' . $extension;
-                            })
-                            ->acceptedFileTypes([
-                                'application/pdf',
-                                'image/*',
-                                'text/*',
-                                'application/msword',
-                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                                'application/vnd.ms-excel',
-                                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                                'application/vnd.ms-powerpoint'
-                            ])
-                            ->maxSize(20480) // 20MB
-                            ->downloadable()
-                            ->previewable()
-                            ->openable()
-                            ->deletable()
-                            ->columnSpanFull()
-                            ->helperText('Supported formats: PDF, Images, Documents (Word, Excel, PowerPoint), Text files. Maximum size: 20MB'),
                     ])
                     ->columns(2),
 
@@ -402,7 +405,7 @@ class DocumentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\MaterialsRelationManager::class,
         ];
     }
 

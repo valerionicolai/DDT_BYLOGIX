@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
     {
         // Crea o aggiorna un utente amministratore di test
         User::updateOrCreate(
-            ['email' => 'admin@dttbylogix.com'],
+            ['email' => 'admin@ddtbylogix.com'],
             [
                 'name' => 'Admin DDT',
                 'password' => Hash::make('password123'),

@@ -117,7 +117,7 @@ git push origin feature/s[sprint]-[task-id]-[description]
 ## Tecnologie Utilizzate
 
 - **Backend**: Laravel 12
-- **Database**: SQLite (sviluppo) / MySQL 8.0 (produzione)
+- **Database**: MySQL 8.0 (produzione)
 - **Frontend**: Vue.js 3 + Tailwind CSS
 - **Build Tool**: Vite
 - **HTTP Client**: Axios
@@ -127,4 +127,4 @@ git push origin feature/s[sprint]-[task-id]-[description]
 
 ## Team di Sviluppo
 
-Progetto sviluppato per DDT by Logix seguendo le specifiche del documento di progettazione esecutiva.
+Progetto sviluppato per Bylogix srò seguendo le specifiche del documento di progettazione esecutiva.

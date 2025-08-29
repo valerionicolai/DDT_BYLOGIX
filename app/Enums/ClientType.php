@@ -13,8 +13,8 @@ enum ClientType: string
     public function label(): string
     {
         return match($this) {
-            self::CLIENTE => 'Cliente',
-            self::FORNITORE => 'Fornitore',
+            self::CLIENTE => 'Client',
+            self::FORNITORE => 'Supplier',
         };
     }
 

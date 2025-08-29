@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\DocumentResource\Pages;
 
 use App\Filament\Resources\DocumentResource;
+use App\Filament\Resources\MaterialResource;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -126,19 +127,42 @@ class ViewDocument extends ViewRecord
 
                 Forms\Components\Section::make('Additional Information')
                     ->schema([
-                        Forms\Components\KeyValue::make('metadata')
+                        Forms\Components\Placeholder::make('metadata_display')
                             ->label('Metadata')
-                            ->disabled()
+                            ->content(function ($record) {
+                                $state = $record->metadata ?? null;
+                                if (!is_array($state) || empty($state)) {
+                                    return '—';
+                                }
+
+                                $items = '';
+                                foreach ($state as $key => $value) {
+                                    $items .= '<div class="flex items-center justify-between py-0.5">'
+                                        . '<span class="text-gray-500">' . e($key) . '</span>'
+                                        . '<span class="font-medium">' . e(is_scalar($value) ? (string) $value : json_encode($value)) . '</span>'
+                                        . '</div>';
+                                }
+
+                                return new \Illuminate\Support\HtmlString($items);
+                            })
                             ->columnSpanFull(),
                     ])
-                    ->collapsible()
-                    ->collapsed(),
+                    ->columns(2),
             ]);
     }
 
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('add_material')
+                ->label('Add material')
+                ->icon('heroicon-o-plus-circle')
+                ->color('success')
+                ->url(fn () => MaterialResource::getUrl('create', [
+                    'document_id' => $this->getRecord()->id,
+                    'document.id' => $this->getRecord()->id,
+                ])),
+
             Actions\Action::make('download')
                 ->label('Download File')
                 ->icon('heroicon-o-arrow-down-tray')
@@ -153,6 +177,12 @@ class ViewDocument extends ViewRecord
                 ->url(fn () => $this->getRecord()->file_url, shouldOpenInNewTab: true)
                 ->visible(fn () => $this->getRecord()->file_exists && ($this->getRecord()->is_pdf || $this->getRecord()->is_image)),
             
+            Actions\Action::make('scan_barcode')
+                ->label('Scan Barcode')
+                ->icon('heroicon-o-qr-code')
+                ->color('success')
+                ->url('/scanner', shouldOpenInNewTab: true),
+            
             Actions\EditAction::make(),
             
             Actions\DeleteAction::make()
@@ -160,6 +190,13 @@ class ViewDocument extends ViewRecord
                     // Delete associated file when deleting the record
                     $this->getRecord()->deleteFile();
                 }),
+        ];
+    }
+    
+    public function getRelationManagers(): array
+    {
+        return [
+            DocumentResource\RelationManagers\MaterialsRelationManager::class,
         ];
     }
 }

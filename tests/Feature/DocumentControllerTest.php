@@ -362,7 +362,7 @@ class DocumentControllerTest extends TestCase
         $response->sendContent();
         $content = ob_get_clean();
         
-        $this->assertStringContainsString('"ID","Titolo","Descrizione"', $content);
+        $this->assertStringContainsString('"ID","Title","Description"', $content);
         $this->assertStringContainsString('Contract', $content);
     }
 

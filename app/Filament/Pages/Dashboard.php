@@ -19,6 +19,8 @@ class Dashboard extends BaseDashboard
     
     protected static ?string $title = 'Dashboard';
     
+    protected static ?string $navigationLabel = 'Home';
+    
     protected static ?int $navigationSort = 1;
 
     public function getWidgets(): array

@@ -3,10 +3,10 @@
 namespace App\Filament\Widgets;
 
 use App\Services\ClientStatusService;
-use Filament\Widgets\StatsOverviewWidget;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class ClientStatusStatsWidget extends StatsOverviewWidget
+class ClientStatusStatsWidget extends BaseWidget
 {
     protected function getStats(): array
     {
@@ -14,23 +14,23 @@ class ClientStatusStatsWidget extends StatsOverviewWidget
         $statistics = $service->getStatusStatistics();
 
         return [
-            Stat::make('Totale Clienti', $statistics['total'])
-                ->description('Tutti i clienti nel sistema')
+            Stat::make('Total Clients', $statistics['total'])
+                ->description('All clients in the system')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('primary'),
 
-            Stat::make('Clienti Attivi', $statistics['active'])
-                ->description('Clienti attualmente attivi')
+            Stat::make('Active Clients', $statistics['active'])
+                ->description('Currently active clients')
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color('success'),
 
-            Stat::make('Prospetti', $statistics['prospects'])
-                ->description('Potenziali clienti')
+            Stat::make('Prospects', $statistics['prospects'])
+                ->description('Potential clients')
                 ->descriptionIcon('heroicon-m-eye')
                 ->color('blue'),
 
-            Stat::make('Pronti per Business', $statistics['business_ready'])
-                ->description('Attivi + Prospetti')
+            Stat::make('Business Ready', $statistics['business_ready'])
+                ->description('Active + Prospects')
                 ->descriptionIcon('heroicon-m-briefcase')
                 ->color('info'),
         ];
