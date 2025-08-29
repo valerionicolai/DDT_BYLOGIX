@@ -80,7 +80,7 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero degli utenti',
+                'message' => 'Error retrieving users',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -102,7 +102,7 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Errori di validazione',
+                    'message' => 'Validation errors',
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -117,14 +117,14 @@ class UserController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Utente creato con successo',
+                'message' => 'User created successfully',
                 'data' => $user
             ], 201);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nella creazione dell\'utente',
+                'message' => 'Error creating user',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -146,12 +146,12 @@ class UserController extends Controller
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Utente non trovato'
+                'message' => 'User not found'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero dell\'utente',
+                'message' => 'Error retrieving user',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -175,7 +175,7 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Errori di validazione',
+                    'message' => 'Validation errors',
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -190,19 +190,19 @@ class UserController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Utente aggiornato con successo',
+                'message' => 'User updated successfully',
                 'data' => $user->fresh()
             ]);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Utente non trovato'
+                'message' => 'User not found'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nell\'aggiornamento dell\'utente',
+                'message' => 'Error updating user',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -220,7 +220,7 @@ class UserController extends Controller
             if (Auth::id() === $user->id) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Non puoi eliminare il tuo stesso account'
+                    'message' => 'You cannot delete your own account'
                 ], 403);
             }
 
@@ -228,18 +228,18 @@ class UserController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Utente eliminato con successo'
+                'message' => 'User deleted successfully'
             ]);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Utente non trovato'
+                'message' => 'User not found'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nell\'eliminazione dell\'utente',
+                'message' => 'Error deleting user',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -268,7 +268,7 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero delle statistiche',
+                'message' => 'Error retrieving statistics',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -289,7 +289,7 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Errori di validazione',
+                    'message' => 'Validation errors',
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -298,7 +298,7 @@ class UserController extends Controller
             if (Auth::id() === $user->id) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Non puoi modificare il tuo stesso ruolo'
+                    'message' => 'You cannot change your own role'
                 ], 403);
             }
 
@@ -306,19 +306,19 @@ class UserController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Ruolo utente aggiornato con successo',
+                'message' => 'User role updated successfully',
                 'data' => $user->fresh()
             ]);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Utente non trovato'
+                'message' => 'User not found'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nell\'aggiornamento del ruolo',
+                'message' => 'Error updating role',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -340,7 +340,7 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero del profilo',
+                'message' => 'Error retrieving profile',
                 'error' => $e->getMessage()
             ], 500);
         }

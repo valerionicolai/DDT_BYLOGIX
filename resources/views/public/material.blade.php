@@ -1,6 +1,6 @@
 @extends('public.layout')
 
-@section('title', 'Materiale: ' . $material->name)
+@section('title', 'Material: ' . $material->name)
 
 @section('content')
 <div class="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -9,7 +9,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-white">{{ $material->name }}</h1>
-                <p class="text-blue-100 mt-1">Materiale ID: #{{ $material->id }}</p>
+                <p class="text-blue-100 mt-1">Material ID: #{{ $material->id }}</p>
             </div>
             <div class="text-right">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
@@ -29,28 +29,28 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Material Information -->
             <div>
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Informazioni Materiale</h2>
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Material Information</h2>
                 
                 <dl class="space-y-4">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Nome</dt>
+                        <dt class="text-sm font-medium text-gray-500">Name</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $material->name }}</dd>
                     </div>
                     
                     @if($material->description)
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Descrizione</dt>
+                        <dt class="text-sm font-medium text-gray-500">Description</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $material->description }}</dd>
                     </div>
                     @endif
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Tipo Materiale</dt>
+                        <dt class="text-sm font-medium text-gray-500">Material Type</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $material->materialType->name }}</dd>
                     </div>
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Stato</dt>
+                        <dt class="text-sm font-medium text-gray-500">State</dt>
                         <dd class="mt-1">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                 @if($material->state->value === 'available') bg-green-100 text-green-800
@@ -65,18 +65,18 @@
                     
                     @if($material->qr_code)
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Codice QR</dt>
+                        <dt class="text-sm font-medium text-gray-500">QR Code</dt>
                         <dd class="mt-1 text-sm text-gray-900 font-mono">{{ $material->qr_code }}</dd>
                     </div>
                     @endif
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Creato il</dt>
+                        <dt class="text-sm font-medium text-gray-500">Created at</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $material->created_at->format('d/m/Y H:i') }}</dd>
                     </div>
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Ultimo aggiornamento</dt>
+                        <dt class="text-sm font-medium text-gray-500">Last updated</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $material->updated_at->format('d/m/Y H:i') }}</dd>
                     </div>
                 </dl>
@@ -89,20 +89,20 @@
                 @if($material->qr_code_url)
                 <div class="text-center mb-6">
                     <img src="{{ $material->qr_code_url }}" 
-                         alt="QR Code per {{ $material->name }}" 
+                         alt="QR Code for {{ $material->name }}" 
                          class="mx-auto border border-gray-200 rounded-lg shadow-sm"
                          style="max-width: 200px;">
-                    <p class="mt-2 text-sm text-gray-500">Scansiona per accedere rapidamente</p>
+                    <p class="mt-2 text-sm text-gray-500">Scan for quick access</p>
                 </div>
                 @endif
 
                 <!-- Document Information -->
                 @if($material->document)
                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                    <h3 class="text-md font-medium text-gray-900 mb-2">Documento Associato</h3>
+                    <h3 class="text-md font-medium text-gray-900 mb-2">Related Document</h3>
                     <div class="space-y-2">
                         <p class="text-sm">
-                            <span class="font-medium">Nome:</span> 
+                            <span class="font-medium">Name:</span> 
                             <a href="{{ route('public.document', $material->document->id) }}" 
                                class="text-blue-600 hover:text-blue-800">
                                 {{ $material->document->name }}
@@ -110,7 +110,7 @@
                         </p>
                         @if($material->document->description)
                         <p class="text-sm">
-                            <span class="font-medium">Descrizione:</span> 
+                            <span class="font-medium">Description:</span> 
                             {{ Str::limit($material->document->description, 100) }}
                         </p>
                         @endif
@@ -121,14 +121,14 @@
                 <!-- Project Information -->
                 @if($material->project)
                 <div class="bg-blue-50 rounded-lg p-4">
-                    <h3 class="text-md font-medium text-gray-900 mb-2">Progetto</h3>
+                    <h3 class="text-md font-medium text-gray-900 mb-2">Project</h3>
                     <div class="space-y-2">
                         <p class="text-sm">
-                            <span class="font-medium">Nome:</span> {{ $material->project->name }}
+                            <span class="font-medium">Name:</span> {{ $material->project->name }}
                         </p>
                         @if($material->project->description)
                         <p class="text-sm">
-                            <span class="font-medium">Descrizione:</span> 
+                            <span class="font-medium">Description:</span> 
                             {{ Str::limit($material->project->description, 100) }}
                         </p>
                         @endif
@@ -147,7 +147,7 @@
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                Indietro
+                Back
             </button>
             
             <div class="flex space-x-3">
@@ -156,15 +156,15 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                     </svg>
-                    Stampa
+                    Print
                 </button>
                 
-                <a href="{{ route('public.scanner') }}" 
+                <a href="{{ route('scanner') }}" 
                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V6a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1z"></path>
                     </svg>
-                    Scansiona Altro
+                    Scan Another
                 </a>
             </div>
         </div>

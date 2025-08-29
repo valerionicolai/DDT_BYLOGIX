@@ -1,6 +1,6 @@
 @extends('public.layout')
 
-@section('title', 'Document: ' . $document->name)
+@section('title', 'Document: ' . $document->title)
 
 @section('content')
 <div class="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -8,7 +8,7 @@
     <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-white">{{ $document->name }}</h1>
+                <h1 class="text-2xl font-bold text-white">{{ $document->title }}</h1>
                 <p class="text-green-100 mt-1">Document ID: #{{ $document->id }}</p>
             </div>
             <div class="text-right">
@@ -28,8 +28,8 @@
                 
                 <dl class="space-y-4">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Name</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $document->name }}</dd>
+                        <dt class="text-sm font-medium text-gray-500">Title</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $document->title }}</dd>
                     </div>
                     
                     @if($document->description)
@@ -163,7 +163,7 @@
                     Print
                 </button>
                 
-                <a href="{{ route('public.scanner') }}" 
+                <a href="{{ route('scanner') }}" 
                    class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-green-700">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V6a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1z"></path>

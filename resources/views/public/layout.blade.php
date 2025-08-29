@@ -33,7 +33,7 @@
                     </div>
                     
                     <nav class="flex space-x-4">
-                        <a href="{{ route('public.scanner') }}" 
+                        <a href="{{ route('scanner') }}" 
                            class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                             Scanner
                         </a>
@@ -55,7 +55,7 @@
         <footer class="bg-white border-t border-gray-200 mt-12">
             <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <div class="text-center text-gray-500 text-sm">
-                    <p>&copy; {{ date('Y') }} DDT by Logix. Sistema di tracciabilità QR Code.</p>
+                    <p>&copy; {{ date('Y') }} DDT by Logix. QR Code Tracking System.</p>
                 </div>
             </div>
         </footer>

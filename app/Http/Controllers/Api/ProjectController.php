@@ -90,13 +90,13 @@ class ProjectController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $projects,
-                'message' => 'Progetti recuperati con successo'
+                'message' => 'Projects retrieved successfully'
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero dei progetti',
+                'message' => 'Error retrieving projects',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -131,8 +131,8 @@ class ProjectController extends Controller
                 if (Carbon::parse($validated['deadline'])->lt(Carbon::parse($validated['end_date']))) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'La deadline non può essere precedente alla data di fine progetto',
-                        'errors' => ['deadline' => ['La deadline deve essere successiva o uguale alla data di fine']]
+                        'message' => 'The deadline cannot be earlier than the project end date',
+                        'errors' => ['deadline' => ['The deadline must be on or after the end date']]
                     ], 422);
                 }
             }
@@ -143,20 +143,20 @@ class ProjectController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Progetto creato con successo',
+                'message' => 'Project created successfully',
                 'data' => $project
             ], 201);
 
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore di validazione',
+                'message' => 'Validation errors',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore durante la creazione del progetto',
+                'message' => 'Error creating project',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -174,18 +174,18 @@ class ProjectController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $project,
-                'message' => 'Progetto recuperato con successo'
+                'message' => 'Project retrieved successfully'
             ]);
 
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Progetto non trovato'
+                'message' => 'Project not found'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero del progetto',
+                'message' => 'Error retrieving project',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -225,13 +225,13 @@ class ProjectController extends Controller
                 if (Carbon::parse($deadline)->lt(Carbon::parse($endDate))) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'La deadline non può essere precedente alla data di fine progetto',
-                        'errors' => ['deadline' => ['La deadline deve essere successiva o uguale alla data di fine']]
+                        'message' => 'The deadline cannot be earlier than the project end date',
+                        'errors' => ['deadline' => ['The deadline must be on or after the end date']]
                     ], 422);
                 }
             }
 
-            // Aggiorna automaticamente la progress_percentage se il progetto è completato
+            // Automatically update progress_percentage if the project is completed
             if (isset($validated['status']) && $validated['status'] === 'completed') {
                 $validated['progress_percentage'] = 100;
             }
@@ -242,25 +242,25 @@ class ProjectController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Progetto aggiornato con successo',
+                'message' => 'Project updated successfully',
                 'data' => $project
             ]);
 
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Progetto non trovato'
+                'message' => 'Project not found'
             ], 404);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore di validazione',
+                'message' => 'Validation error',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore durante l\'aggiornamento del progetto',
+                'message' => 'Error updating project',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -278,7 +278,7 @@ class ProjectController extends Controller
             if ($project->status === 'active') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Impossibile eliminare un progetto attivo. Cambiare prima lo status.'
+                    'message' => 'Cannot delete an active project. Change the status first.'
                 ], 409);
             }
 
@@ -286,18 +286,18 @@ class ProjectController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Progetto eliminato con successo'
+                'message' => 'Project deleted successfully'
             ]);
 
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Progetto non trovato'
+                'message' => 'Project not found'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nell\'eliminazione del progetto',
+                'message' => 'Error deleting project',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -344,13 +344,13 @@ class ProjectController extends Controller
                     'by_status' => $statusStats,
                     'by_priority' => $priorityStats
                 ],
-                'message' => 'Statistiche progetti recuperate con successo'
+                'message' => 'Project statistics retrieved successfully'
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero delle statistiche',
+                'message' => 'Error retrieving statistics',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -369,7 +369,7 @@ class ProjectController extends Controller
                 'notes' => 'nullable|string'
             ]);
 
-            // Aggiorna automaticamente lo status se necessario
+            // Automatically update status if needed
             if ($validated['progress_percentage'] == 100 && $project->status !== 'completed') {
                 $validated['status'] = 'completed';
             } elseif ($validated['progress_percentage'] > 0 && $project->status === 'draft') {
@@ -381,25 +381,25 @@ class ProjectController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Progresso progetto aggiornato con successo',
+                'message' => 'Project progress updated successfully',
                 'data' => $project
             ]);
 
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Progetto non trovato'
+                'message' => 'Project not found'
             ], 404);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore di validazione',
+                'message' => 'Validation error',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore durante l\'aggiornamento del progresso',
+                'message' => 'Error updating progress',
                 'error' => $e->getMessage()
             ], 500);
         }

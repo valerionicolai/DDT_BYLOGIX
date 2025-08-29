@@ -82,7 +82,7 @@ class MaterialController extends Controller
             Log::error('Error fetching materials: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero dei materiali',
+                'message' => 'Error retrieving materials',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -110,7 +110,7 @@ class MaterialController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Dati di validazione non validi',
+                    'message' => 'Validation errors',
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -131,7 +131,7 @@ class MaterialController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Materiale creato con successo',
+                'message' => 'Material created successfully',
                 'data' => $material
             ], 201);
 
@@ -140,7 +140,7 @@ class MaterialController extends Controller
             Log::error('Error creating material: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nella creazione del materiale',
+                'message' => 'Error creating material',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -163,7 +163,7 @@ class MaterialController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Materiale non trovato',
+                'message' => 'Material not found',
                 'error' => $e->getMessage()
             ], 404);
         }
@@ -193,7 +193,7 @@ class MaterialController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Dati di validazione non validi',
+                    'message' => 'Validation errors',
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -203,7 +203,7 @@ class MaterialController extends Controller
                 if ($this->wouldCreateCircularReference($material, $request->parent_id)) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Impossibile impostare questo materiale come genitore: creerebbe una relazione circolare'
+                        'message' => 'Cannot set this material as parent: it would create a circular relationship'
                     ], 422);
                 }
             }
@@ -226,7 +226,7 @@ class MaterialController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Materiale aggiornato con successo',
+                'message' => 'Material updated successfully',
                 'data' => $material
             ]);
 
@@ -235,7 +235,7 @@ class MaterialController extends Controller
             Log::error('Error updating material: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nell\'aggiornamento del materiale',
+                'message' => 'Error updating material',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -253,7 +253,7 @@ class MaterialController extends Controller
             if ($material->children()->count() > 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Impossibile eliminare il materiale: ha materiali figli associati'
+                    'message' => 'Cannot delete material: it has child materials associated'
                 ], 422);
             }
 
@@ -270,7 +270,7 @@ class MaterialController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Materiale eliminato con successo'
+                'message' => 'Material deleted successfully'
             ]);
 
         } catch (\Exception $e) {
@@ -278,7 +278,7 @@ class MaterialController extends Controller
             Log::error('Error deleting material: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nell\'eliminazione del materiale',
+                'message' => 'Error deleting material',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -313,7 +313,7 @@ class MaterialController extends Controller
             Log::error('Error fetching material stats: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero delle statistiche',
+                'message' => 'Error retrieving statistics',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -332,7 +332,7 @@ class MaterialController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'QR code richiesto',
+                    'message' => 'QR code is required',
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -344,7 +344,7 @@ class MaterialController extends Controller
             if (!$material) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Materiale non trovato con questo QR code'
+                    'message' => 'Material not found with this QR code'
                 ], 404);
             }
 
@@ -357,7 +357,7 @@ class MaterialController extends Controller
             Log::error('Error searching material by QR code: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nella ricerca del materiale',
+                'message' => 'Error searching for material',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -389,7 +389,7 @@ class MaterialController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'QR code rigenerato con successo',
+                'message' => 'QR code regenerated successfully',
                 'data' => [
                     'qr_code' => $material->qr_code,
                     'qr_code_path' => $material->qr_code_path,
@@ -402,7 +402,7 @@ class MaterialController extends Controller
             Log::error('Error regenerating QR code: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nella rigenerazione del QR code',
+                'message' => 'Error regenerating QR code',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -436,7 +436,7 @@ class MaterialController extends Controller
             $materials = $query->get();
 
             $csvData = [];
-            $csvData[] = ['ID', 'Nome', 'Descrizione', 'Tipo', 'Stato', 'Quantità', 'Unità di Misura', 'Posizione', 'Genitore', 'QR Code', 'Creato il'];
+            $csvData[] = ['ID', 'Name', 'Description', 'Material Type', 'State', 'Quantity', 'Unit of Measure', 'Location', 'Parent', 'QR Code', 'Created at'];
 
             foreach ($materials as $material) {
                 $csvData[] = [
@@ -470,7 +470,7 @@ class MaterialController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Export CSV generato con successo',
+                'message' => 'CSV export generated successfully',
                 'data' => [
                     'filename' => $filename,
                     'path' => $filePath,
@@ -482,7 +482,7 @@ class MaterialController extends Controller
             Log::error('Error exporting materials: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nell\'export dei materiali',
+                'message' => 'Error exporting materials',
                 'error' => $e->getMessage()
             ], 500);
         }

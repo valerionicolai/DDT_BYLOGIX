@@ -86,7 +86,7 @@ class MaterialTypeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero dei tipi di materiale',
+                'message' => 'Error retrieving material types',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -116,20 +116,20 @@ class MaterialTypeController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Tipo di materiale creato con successo',
+                'message' => 'Material type created successfully',
                 'data' => $materialType
             ], 201);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errori di validazione',
+                'message' => 'Validation errors',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nella creazione del tipo di materiale',
+                'message' => 'Error creating material type',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -151,12 +151,12 @@ class MaterialTypeController extends Controller
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Tipo di materiale non trovato'
+                'message' => 'Material type not found'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero del tipo di materiale',
+                'message' => 'Error retrieving material type',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -185,25 +185,25 @@ class MaterialTypeController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Tipo di materiale aggiornato con successo',
+                'message' => 'Material type updated successfully',
                 'data' => $materialType->fresh()
             ]);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Tipo di materiale non trovato'
+                'message' => 'Material type not found'
             ], 404);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errori di validazione',
+                'message' => 'Validation errors',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nell\'aggiornamento del tipo di materiale',
+                'message' => 'Error updating material type',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -224,18 +224,18 @@ class MaterialTypeController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Tipo di materiale eliminato con successo'
+                'message' => 'Material type deleted successfully'
             ]);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Tipo di materiale non trovato'
+                'message' => 'Material type not found'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nell\'eliminazione del tipo di materiale',
+                'message' => 'Error deleting material type',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -276,7 +276,7 @@ class MaterialTypeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero delle statistiche',
+                'message' => 'Error retrieving statistics',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -302,7 +302,7 @@ class MaterialTypeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero delle categorie',
+                'message' => 'Error retrieving categories',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -327,7 +327,7 @@ class MaterialTypeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel recupero delle unità di misura',
+                'message' => 'Error retrieving units of measure',
                 'error' => $e->getMessage()
             ], 500);
         }

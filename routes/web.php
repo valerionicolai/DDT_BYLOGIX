@@ -4,17 +4,21 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PublicController;
 
-// Public QR Code routes (no authentication required)
+// Public material and document display (still accessible without auth)
 Route::prefix('public')->name('public.')->group(function () {
-    // QR Code scanner page
-    Route::get('/scanner', [PublicController::class, 'scanner'])->name('scanner');
-    
-    // Public material and document display
     Route::get('/material/{id}', [PublicController::class, 'showMaterial'])->name('material');
     Route::get('/document/{id}', [PublicController::class, 'showDocument'])->name('document');
-    
-    // QR Code scanning endpoint
     Route::get('/qr/{qrCode}', [PublicController::class, 'scanQRCode'])->name('qr.scan');
+});
+
+// Login route - redirect to Filament admin login
+Route::get('/login', function () {
+    return redirect('/admin/login');
+})->name('login');
+
+// Authenticated scanner route
+Route::middleware('auth')->group(function () {
+    Route::get('/scanner', [PublicController::class, 'scanner'])->name('scanner');
 });
 
 // API routes for QR codes (no authentication required for public access)

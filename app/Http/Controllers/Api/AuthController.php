@@ -30,7 +30,7 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Le credenziali fornite non sono corrette.'],
+                'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
@@ -40,7 +40,7 @@ class AuthController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Login effettuato con successo',
+                'message' => 'Login successful',
                 'data' => [
                     'user' => [
                         'id' => $user->id,
@@ -66,7 +66,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Login effettuato con successo',
+            'message' => 'Login successful',
             'data' => [
                 'user' => [
                     'id' => $user->id,
@@ -99,7 +99,7 @@ class AuthController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Logout effettuato con successo'
+                'message' => 'Logout successful'
             ], 200);
         }
 
@@ -110,7 +110,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Logout effettuato con successo'
+            'message' => 'Logout successful'
         ], 200);
     }
 
@@ -166,7 +166,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Registrazione completata con successo',
+            'message' => 'Registration successful',
             'data' => [
                 'user' => [
                     'id' => $user->id,
@@ -196,7 +196,7 @@ class AuthController extends Controller
         if ($this->isStatefulRequest($request)) {
             return response()->json([
                 'success' => true,
-                'message' => 'Sessione ancora valida',
+                'message' => 'Session still valid',
                 'data' => [
                     'user' => [
                         'id' => $user->id,
@@ -222,7 +222,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Token aggiornato con successo',
+            'message' => 'Token refreshed successfully',
             'data' => [
                 'user' => [
                     'id' => $user->id,
